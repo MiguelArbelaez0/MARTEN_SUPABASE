@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Marten Supabase</title>
+
+    <link
+        rel="stylesheet"
+        href="styles.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <header class="topbar">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    M
+                </div>
+
+                <div>
+                    <h1>
+                        Marten Supabase
+                    </h1>
+
+                    <p>
+                        Sistema de verificación
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                Sistema activo
+
+            </div>
+
+        </header>
+
+
+        <!-- ================================================= -->
+        <!-- CONTENIDO PRINCIPAL -->
+        <!-- ================================================= -->
+
+        <main>
+
+
+            <!-- ================================================= -->
+            <!-- FORMULARIO -->
+            <!-- ================================================= -->
+
+            <section class="main-grid">
+
+                <div class="verification-card">
+
+                    <!-- PASO 01 -->
+
+                    <div
+                        id="email-section"
+                        class="verification-section">
+
+                        <span class="step-number">
+                            01
+                        </span>
+
+                        <h2>
+                            Verifica tu correo
+                        </h2>
+
+                        <p class="description">
+                            Ingresa tu correo electrónico
+                            para recibir un código de
+                            verificación de 6 dígitos.
+                        </p>
+
+                        <form id="email-form">
+
+                            <label for="email">
+                                Correo electrónico
+                            </label>
+
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="correo@ejemplo.com"
+                                autocomplete="email"
+                                required>
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                                id="send-code-button">
+
+                                Enviar código
+
+                            </button>
+
+                        </form>
+
+                        <div
+                            id="email-message"
+                            class="message hidden">
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASO 02 -->
+
+                    <div
+                        id="code-section"
+                        class="verification-section hidden">
+
+                        <span class="step-number">
+                            02
+                        </span>
+
+                        <h2>
+                            Ingresa el código
+                        </h2>
+
+                        <p class="description">
+                            Enviamos un código de 6 dígitos
+                            a tu correo electrónico.
+                        </p>
+
+                        <div class="email-display">
+
+                            <strong id="email-display">
+                            </strong>
+
+                        </div>
+
+                        <form id="code-form">
+
+                            <label for="code">
+                                Código de verificación
+                            </label>
+
+                            <input
+                                id="code"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="6"
+                                placeholder="000000"
+                                autocomplete="one-time-code"
+                                required>
+
+                            <div
+                                id="timer"
+                                class="timer">
+                                Código válido durante
+                                10:00
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="primary-button"
+                                id="verify-code-button">
+
+                                Verificar código
+
+                            </button>
+
+                        </form>
+
+                        <button
+                            type="button"
+                            id="change-email"
+                            class="text-button">
+
+                            Cambiar correo
+
+                        </button>
+
+                        <div
+                            id="code-message"
+                            class="message hidden">
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASO 03 -->
+
+                    <div
+                        id="success-section"
+                        class="verification-section hidden">
+
+                        <div class="success-icon">
+                            ✓
+                        </div>
+
+                        <span class="step-number">
+                            03
+                        </span>
+
+                        <h2>
+                            Correo verificado
+                        </h2>
+
+                        <p class="description">
+                            El correo electrónico fue
+                            verificado correctamente.
+                        </p>
+
+                        <div class="success-email">
+                            <strong id="success-email">
+                            </strong>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="restart-button"
+                            class="primary-button">
+
+                            Realizar otra verificación
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- ESTADO DEL SISTEMA -->
+                <!-- ================================================= -->
+
+                <aside class="system-card">
+
+                    <div class="system-card-header">
+
+                        <div class="system-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Estado del sistema
+                            </h2>
+
+                            <p>
+                                Componentes conectados
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="component-list">
+
+                        <div class="component">
+
+                            <div>
+                                <strong>
+                                    ASP.NET Core
+                                </strong>
+
+                                <span>
+                                    API
+                                </span>
+                            </div>
+
+                            <b>
+                                Activo
+                            </b>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div>
+                                <strong>
+                                    Marten
+                                </strong>
+
+                                <span>
+                                    Document Store
+                                </span>
+                            </div>
+
+                            <b>
+                                Activo
+                            </b>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div>
+                                <strong>
+                                    Supabase
+                                </strong>
+
+                                <span>
+                                    PostgreSQL
+                                </span>
+                            </div>
+
+                            <b>
+                                Conectado
+                            </b>
+
+                        </div>
+
+
+                        <div class="component">
+
+                            <div>
+                                <strong>
+                                    Gmail SMTP
+                                </strong>
+
+                                <span>
+                                    Servicio de correo
+                                </span>
+                            </div>
+
+                            <b>
+                                Activo
+                            </b>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flow">
+
+                        <h3>
+                            Flujo
+                        </h3>
+
+                        <div class="flow-items">
+
+                            <span>
+                                Formulario
+                            </span>
+
+                            →
+                            
+                            <span>
+                                API
+                            </span>
+
+                            →
+
+                            <span>
+                                Marten
+                            </span>
+
+                        </div>
+
+                        <div class="flow-items">
+
+                            <span>
+                                Supabase
+                            </span>
+
+                            →
+
+                            <span>
+                                Gmail
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- HISTORIAL -->
+            <!-- ================================================= -->
+
+            <section class="history-panel">
+
+                <div class="history-header">
+
+                    <div>
+
+                        <span class="section-number">
+                            04
+                        </span>
+
+                        <h2>
+                            Historial de verificaciones
+                        </h2>
+
+                        <p>
+                            Últimos registros almacenados
+                            mediante Marten.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="refresh-history"
+                        class="secondary-button">
+
+                        Actualizar
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="history-container"
+                    class="history-container">
+
+                    <div class="history-empty">
+                        Cargando historial...
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- ================================================= -->
+        <!-- FOOTER -->
+        <!-- ================================================= -->
+
+        <footer>
+
+            Marten + ASP.NET Core +
+            Supabase PostgreSQL
+
+        </footer>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

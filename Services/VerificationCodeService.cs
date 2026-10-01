@@ -22,18 +22,15 @@ public class VerificationCodeService
     {
         email = email.Trim().ToLowerInvariant();
 
-        // Generar código aleatorio de 6 dígitos
         var code = RandomNumberGenerator
             .GetInt32(100000, 1000000)
             .ToString();
 
-        // Guardamos solamente el hash
         var codeHash = ComputeHash(code);
 
         await using var session =
             _store.LightweightSession();
 
-        // Invalidar códigos anteriores del mismo correo
         var existingCodes = await session
             .Query<VerificationCode>()
             .Where(x =>
@@ -44,26 +41,30 @@ public class VerificationCodeService
         foreach (var existingCode in existingCodes)
         {
             existingCode.Used = true;
+            existingCode.Status = "Reemplazado";
+
             session.Store(existingCode);
         }
 
-        // Crear nuevo código
+        var now = DateTime.UtcNow;
+
         var verification = new VerificationCode
         {
             Id = Guid.NewGuid(),
             Email = email,
             CodeHash = codeHash,
-            CreatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+            CreatedAt = now,
+            ExpiresAt = now.AddMinutes(10),
             Used = false,
-            Attempts = 0
+            Attempts = 0,
+            Status = "Pendiente",
+            VerifiedAt = null
         };
 
         session.Store(verification);
 
         await session.SaveChangesAsync();
 
-        // Enviar código al correo
         await _emailService.SendVerificationCodeAsync(
             email,
             code);
@@ -78,7 +79,6 @@ public class VerificationCodeService
         await using var session =
             _store.LightweightSession();
 
-        // Buscar el código más reciente
         var verification = await session
             .Query<VerificationCode>()
             .Where(x =>
@@ -92,10 +92,10 @@ public class VerificationCodeService
             return false;
         }
 
-        // Comprobar expiración
         if (verification.ExpiresAt < DateTime.UtcNow)
         {
             verification.Used = true;
+            verification.Status = "Expirado";
 
             session.Store(verification);
 
@@ -104,10 +104,10 @@ public class VerificationCodeService
             return false;
         }
 
-        // Máximo 5 intentos
         if (verification.Attempts >= 5)
         {
             verification.Used = true;
+            verification.Status = "Bloqueado";
 
             session.Store(verification);
 
@@ -118,7 +118,6 @@ public class VerificationCodeService
 
         verification.Attempts++;
 
-        // Comparar hash
         var submittedHash = ComputeHash(code);
 
         if (submittedHash != verification.CodeHash)
@@ -130,8 +129,9 @@ public class VerificationCodeService
             return false;
         }
 
-        // Código correcto
         verification.Used = true;
+        verification.Status = "Verificado";
+        verification.VerifiedAt = DateTime.UtcNow;
 
         session.Store(verification);
 

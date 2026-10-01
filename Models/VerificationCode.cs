@@ -15,4 +15,8 @@ public class VerificationCode
     public bool Used { get; set; }
 
     public int Attempts { get; set; }
+
+    public string Status { get; set; } = "Pendiente";
+
+    public DateTime? VerifiedAt { get; set; }
 }

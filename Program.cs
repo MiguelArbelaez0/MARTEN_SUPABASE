@@ -6,11 +6,6 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-// ==========================================
-// CONEXIÓN A SUPABASE
-// ==========================================
-
 var connectionString =
     Environment.GetEnvironmentVariable(
         "SUPABASE_CONNECTION_STRING");
@@ -21,22 +16,12 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "No se encontró SUPABASE_CONNECTION_STRING en .env.");
 }
 
-
-// ==========================================
-// COMPROBAR USUARIO DE POSTGRESQL
-// ==========================================
-
 var username = connectionString
     .Split("Username=")[1]
     .Split(";")[0];
 
 Console.WriteLine(
     $"USUARIO POSTGRESQL LEÍDO: {username}");
-
-
-// ==========================================
-// MARTEN
-// ==========================================
 
 builder.Services
     .AddMarten(options =>
@@ -46,45 +31,29 @@ builder.Services
     .UseLightweightSessions()
     .ApplyAllDatabaseChangesOnStartup();
 
-
-// ==========================================
-// SERVICIOS
-// ==========================================
-
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 builder.Services.AddScoped<VerificationCodeService>();
 
 builder.Services.AddOpenApi();
 
-
-// ==========================================
-// APLICACIÓN
-// ==========================================
-
 var app = builder.Build();
 
+app.UseDefaultFiles();
 
-// ==========================================
-// OPENAPI
-// ==========================================
+app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-
-// ==========================================
-// HTTPS
-// ==========================================
-
 app.UseHttpsRedirection();
 
 
-// ==========================================
+// ======================================================
 // ENVIAR CÓDIGO DE VERIFICACIÓN
-// ==========================================
+// ======================================================
 
 app.MapPost(
     "/auth/send-code",
@@ -114,10 +83,6 @@ app.MapPost(
         }
         catch (Exception ex)
         {
-            // ==========================================
-            // MOSTRAR ERROR COMPLETO EN CONSOLA
-            // ==========================================
-
             Console.WriteLine();
             Console.WriteLine(
                 "==========================================");
@@ -137,15 +102,15 @@ app.MapPost(
             Console.WriteLine();
 
             return Results.Problem(
-                detail: ex.ToString(),
+                detail: ex.Message,
                 statusCode: 500);
         }
     });
 
 
-// ==========================================
-// VALIDAR CÓDIGO
-// ==========================================
+// ======================================================
+// VERIFICAR CÓDIGO
+// ======================================================
 
 app.MapPost(
     "/auth/verify-code",
@@ -195,16 +160,44 @@ app.MapPost(
     });
 
 
-// ==========================================
-// EJECUTAR
-// ==========================================
+// ======================================================
+// HISTORIAL DE VERIFICACIONES
+// ======================================================
+
+app.MapGet(
+    "/auth/history",
+    async (IDocumentStore store) =>
+    {
+        await using var session =
+            store.LightweightSession();
+
+        var history = await session
+            .Query<MARTEN_SUPABASE.Models.VerificationCode>()
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(20)
+            .ToListAsync();
+
+        var result = history.Select(x => new
+        {
+            id = x.Id,
+            email = x.Email,
+            createdAt = x.CreatedAt,
+            expiresAt = x.ExpiresAt,
+            attempts = x.Attempts,
+            status = x.Status,
+            verifiedAt = x.VerifiedAt
+        });
+
+        return Results.Ok(result);
+    });
+
 
 app.Run();
 
 
-// ==========================================
+// ======================================================
 // REQUESTS
-// ==========================================
+// ======================================================
 
 public record SendCodeRequest(
     string Email
