@@ -1,0 +1,6 @@
+@MARTEN_SUPABASE_HostAddress = http://localhost:5155
+
+GET {{MARTEN_SUPABASE_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
