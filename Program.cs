@@ -114,8 +114,30 @@ app.MapPost(
         }
         catch (Exception ex)
         {
+            // ==========================================
+            // MOSTRAR ERROR COMPLETO EN CONSOLA
+            // ==========================================
+
+            Console.WriteLine();
+            Console.WriteLine(
+                "==========================================");
+
+            Console.WriteLine(
+                "ERROR EN EL ENVÍO DEL CÓDIGO");
+
+            Console.WriteLine(
+                "==========================================");
+
+            Console.WriteLine(
+                ex.ToString());
+
+            Console.WriteLine(
+                "==========================================");
+
+            Console.WriteLine();
+
             return Results.Problem(
-                detail: ex.Message,
+                detail: ex.ToString(),
                 statusCode: 500);
         }
     });

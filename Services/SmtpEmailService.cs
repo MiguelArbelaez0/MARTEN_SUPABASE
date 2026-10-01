@@ -49,24 +49,52 @@ public class SmtpEmailService : IEmailService
     {
         var message = new MimeMessage();
 
+        // ==========================================
+        // REMITENTE
+        // ==========================================
+
         message.From.Add(
             new MailboxAddress(
                 _smtpFromName,
                 _smtpFrom));
 
+        // ==========================================
+        // DESTINATARIO
+        // ==========================================
+
         message.To.Add(
             MailboxAddress.Parse(email));
+
+        // ==========================================
+        // ASUNTO
+        // ==========================================
 
         message.Subject =
             "Código de verificación - Marten Supabase";
 
+        // ==========================================
+        // CONTENIDO DEL CORREO
+        // ==========================================
+
         var body = $"""
         <html>
-        <body style="font-family: Arial, sans-serif;">
+        <body style="
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #222;
+        ">
 
-            <h2>Verificación de correo electrónico</h2>
+            <h2>
+                Verificación de correo electrónico
+            </h2>
 
-            <p>Tu código de verificación es:</p>
+            <p>
+                Has solicitado verificar tu correo electrónico.
+            </p>
+
+            <p>
+                Tu código de verificación es:
+            </p>
 
             <div style="
                 font-size: 32px;
@@ -102,6 +130,10 @@ public class SmtpEmailService : IEmailService
             HtmlBody = body
         }.ToMessageBody();
 
+        // ==========================================
+        // CONEXIÓN SMTP
+        // ==========================================
+
         using var smtp = new SmtpClient();
 
         await smtp.ConnectAsync(
@@ -109,11 +141,23 @@ public class SmtpEmailService : IEmailService
             _smtpPort,
             SecureSocketOptions.StartTls);
 
+        // ==========================================
+        // AUTENTICACIÓN
+        // ==========================================
+
         await smtp.AuthenticateAsync(
             _smtpUser,
             _smtpPassword);
 
+        // ==========================================
+        // ENVIAR CORREO
+        // ==========================================
+
         await smtp.SendAsync(message);
+
+        // ==========================================
+        // CERRAR CONEXIÓN
+        // ==========================================
 
         await smtp.DisconnectAsync(true);
     }
