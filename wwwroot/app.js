@@ -59,7 +59,24 @@ let countdownInterval = null;
 
 
 // ======================================================
-// FUNCIONES DE MENSAJES
+// VALIDAR GMAIL EN FRONTEND
+// ======================================================
+
+function isGmailAddress(email) {
+
+    if (!email) {
+        return false;
+    }
+
+    return email
+        .trim()
+        .toLowerCase()
+        .endsWith("@gmail.com");
+}
+
+
+// ======================================================
+// MENSAJES
 // ======================================================
 
 function showMessage(
@@ -67,7 +84,9 @@ function showMessage(
     message,
     type
 ) {
-    element.textContent = message;
+
+    element.textContent =
+        message;
 
     element.className =
         `message ${type}`;
@@ -75,10 +94,12 @@ function showMessage(
 
 
 function hideMessage(element) {
+
     element.className =
         "message hidden";
 
-    element.textContent = "";
+    element.textContent =
+        "";
 }
 
 
@@ -90,18 +111,26 @@ function startTimer() {
 
     let remainingSeconds = 600;
 
-    clearInterval(countdownInterval);
+    clearInterval(
+        countdownInterval
+    );
 
-    updateTimer(remainingSeconds);
+    updateTimer(
+        remainingSeconds
+    );
 
     countdownInterval =
         setInterval(() => {
 
             remainingSeconds--;
 
-            updateTimer(remainingSeconds);
+            updateTimer(
+                remainingSeconds
+            );
 
-            if (remainingSeconds <= 0) {
+            if (
+                remainingSeconds <= 0
+            ) {
 
                 clearInterval(
                     countdownInterval
@@ -109,7 +138,6 @@ function startTimer() {
 
                 timer.textContent =
                     "El código ha expirado.";
-
             }
 
         }, 1000);
@@ -119,7 +147,9 @@ function startTimer() {
 function updateTimer(seconds) {
 
     const minutes =
-        Math.floor(seconds / 60);
+        Math.floor(
+            seconds / 60
+        );
 
     const remaining =
         seconds % 60;
@@ -141,10 +171,17 @@ emailForm.addEventListener(
 
         event.preventDefault();
 
-        hideMessage(emailMessage);
+        hideMessage(
+            emailMessage
+        );
 
         const email =
             emailInput.value.trim();
+
+
+        // ----------------------------------------------
+        // VALIDAR CORREO
+        // ----------------------------------------------
 
         if (!email) {
 
@@ -157,10 +194,33 @@ emailForm.addEventListener(
             return;
         }
 
-        sendCodeButton.disabled = true;
+
+        // ----------------------------------------------
+        // VALIDAR GMAIL
+        // ----------------------------------------------
+
+        if (!isGmailAddress(email)) {
+
+            showMessage(
+                emailMessage,
+                "Solo se permiten direcciones Gmail (@gmail.com).",
+                "error"
+            );
+
+            return;
+        }
+
+
+        // ----------------------------------------------
+        // ENVIANDO
+        // ----------------------------------------------
+
+        sendCodeButton.disabled =
+            true;
 
         sendCodeButton.textContent =
             "Enviando...";
+
 
         try {
 
@@ -181,8 +241,10 @@ emailForm.addEventListener(
                     }
                 );
 
+
             const data =
                 await response.json();
+
 
             if (!response.ok) {
 
@@ -192,24 +254,34 @@ emailForm.addEventListener(
                 );
             }
 
-            currentEmail = email;
+
+            currentEmail =
+                email;
+
 
             emailDisplay.textContent =
                 email;
+
 
             emailSection.classList.add(
                 "hidden"
             );
 
+
             codeSection.classList.remove(
                 "hidden"
             );
 
-            codeInput.value = "";
+
+            codeInput.value =
+                "";
+
 
             codeInput.focus();
 
+
             startTimer();
+
 
             await loadHistory();
 
@@ -225,11 +297,13 @@ emailForm.addEventListener(
         }
         finally {
 
-            sendCodeButton.disabled = false;
+            sendCodeButton.disabled =
+                false;
 
             sendCodeButton.textContent =
                 "Enviar código";
         }
+
     }
 );
 
@@ -244,10 +318,14 @@ codeForm.addEventListener(
 
         event.preventDefault();
 
-        hideMessage(codeMessage);
+        hideMessage(
+            codeMessage
+        );
+
 
         const code =
             codeInput.value.trim();
+
 
         if (code.length !== 6) {
 
@@ -260,10 +338,13 @@ codeForm.addEventListener(
             return;
         }
 
-        verifyCodeButton.disabled = true;
+
+        verifyCodeButton.disabled =
+            true;
 
         verifyCodeButton.textContent =
             "Verificando...";
+
 
         try {
 
@@ -285,8 +366,10 @@ codeForm.addEventListener(
                     }
                 );
 
+
             const data =
                 await response.json();
+
 
             if (!response.ok) {
 
@@ -296,20 +379,25 @@ codeForm.addEventListener(
                 );
             }
 
+
             clearInterval(
                 countdownInterval
             );
 
+
             successEmail.textContent =
                 currentEmail;
+
 
             codeSection.classList.add(
                 "hidden"
             );
 
+
             successSection.classList.remove(
                 "hidden"
             );
+
 
             await loadHistory();
 
@@ -325,11 +413,13 @@ codeForm.addEventListener(
         }
         finally {
 
-            verifyCodeButton.disabled = false;
+            verifyCodeButton.disabled =
+                false;
 
             verifyCodeButton.textContent =
                 "Verificar código";
         }
+
     }
 );
 
@@ -346,19 +436,29 @@ changeEmailButton.addEventListener(
             countdownInterval
         );
 
+
         codeSection.classList.add(
             "hidden"
         );
+
 
         emailSection.classList.remove(
             "hidden"
         );
 
-        hideMessage(emailMessage);
 
-        hideMessage(codeMessage);
+        hideMessage(
+            emailMessage
+        );
+
+
+        hideMessage(
+            codeMessage
+        );
+
 
         emailInput.focus();
+
     }
 );
 
@@ -375,31 +475,45 @@ restartButton.addEventListener(
             countdownInterval
         );
 
+
         successSection.classList.add(
             "hidden"
         );
+
 
         emailSection.classList.remove(
             "hidden"
         );
 
-        emailInput.value = "";
 
-        codeInput.value = "";
+        emailInput.value =
+            "";
 
-        hideMessage(emailMessage);
+        codeInput.value =
+            "";
 
-        hideMessage(codeMessage);
+
+        hideMessage(
+            emailMessage
+        );
+
+
+        hideMessage(
+            codeMessage
+        );
+
 
         emailInput.focus();
 
+
         loadHistory();
+
     }
 );
 
 
 // ======================================================
-// SOLO PERMITIR NÚMEROS
+// SOLO PERMITIR NÚMEROS EN EL CÓDIGO
 // ======================================================
 
 codeInput.addEventListener(
@@ -410,6 +524,7 @@ codeInput.addEventListener(
             codeInput.value
                 .replace(/\D/g, "")
                 .slice(0, 6);
+
     }
 );
 
@@ -428,10 +543,12 @@ async function loadHistory() {
             </div>
         `;
 
+
         const response =
             await fetch(
                 "/auth/history"
             );
+
 
         if (!response.ok) {
 
@@ -440,8 +557,10 @@ async function loadHistory() {
             );
         }
 
+
         const history =
             await response.json();
+
 
         if (!history.length) {
 
@@ -454,6 +573,7 @@ async function loadHistory() {
             return;
         }
 
+
         historyContainer.innerHTML =
             history
                 .map(item => {
@@ -465,6 +585,7 @@ async function loadHistory() {
                             "es-CO"
                         );
 
+
                     const statusClass =
                         item.status
                             .toLowerCase()
@@ -473,6 +594,7 @@ async function loadHistory() {
                                 /[\u0300-\u036f]/g,
                                 ""
                             );
+
 
                     return `
                         <div class="history-row">
@@ -498,8 +620,10 @@ async function loadHistory() {
 
                         </div>
                     `;
+
                 })
                 .join("");
+
 
     }
     catch (error) {
@@ -510,32 +634,38 @@ async function loadHistory() {
             </div>
         `;
 
+
         console.error(
             "Error cargando historial:",
             error
         );
+
     }
 }
 
 
 // ======================================================
-// SEGURIDAD BÁSICA PARA MOSTRAR TEXTO
+// PROTEGER TEXTO MOSTRADO EN EL HISTORIAL
 // ======================================================
 
 function escapeHtml(value) {
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
+
 
     div.textContent =
         value ?? "";
+
 
     return div.innerHTML;
 }
 
 
 // ======================================================
-// BOTÓN ACTUALIZAR HISTORIAL
+// ACTUALIZAR HISTORIAL
 // ======================================================
 
 refreshHistoryButton.addEventListener(

@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -13,11 +14,14 @@
     <link
         rel="stylesheet"
         href="styles.css">
+
 </head>
+
 
 <body>
 
     <div class="app-container">
+
 
         <!-- ================================================= -->
         <!-- HEADER -->
@@ -32,6 +36,7 @@
                 </div>
 
                 <div>
+
                     <h1>
                         Marten Supabase
                     </h1>
@@ -39,9 +44,11 @@
                     <p>
                         Sistema de verificación
                     </p>
+
                 </div>
 
             </div>
+
 
             <div class="system-status">
 
@@ -54,6 +61,7 @@
         </header>
 
 
+
         <!-- ================================================= -->
         <!-- CONTENIDO PRINCIPAL -->
         <!-- ================================================= -->
@@ -61,46 +69,67 @@
         <main>
 
 
-            <!-- ================================================= -->
-            <!-- FORMULARIO -->
-            <!-- ================================================= -->
-
             <section class="main-grid">
+
+
+                <!-- ================================================= -->
+                <!-- TARJETA DE VERIFICACIÓN -->
+                <!-- ================================================= -->
 
                 <div class="verification-card">
 
+
+                    <!-- ================================================= -->
                     <!-- PASO 01 -->
+                    <!-- ================================================= -->
 
                     <div
                         id="email-section"
                         class="verification-section">
 
+
                         <span class="step-number">
                             01
                         </span>
+
 
                         <h2>
                             Verifica tu correo
                         </h2>
 
+
                         <p class="description">
-                            Ingresa tu correo electrónico
-                            para recibir un código de
-                            verificación de 6 dígitos.
+
+                            Ingresa tu correo Gmail
+                            para recibir un código
+                            de verificación de 6 dígitos.
+
                         </p>
 
+
                         <form id="email-form">
+
 
                             <label for="email">
                                 Correo electrónico
                             </label>
 
+
                             <input
                                 id="email"
                                 type="email"
-                                placeholder="correo@ejemplo.com"
+                                placeholder="correo@gmail.com"
                                 autocomplete="email"
                                 required>
+
+
+                            <small class="input-help">
+
+                                Solo se permiten cuentas
+                                Gmail (@gmail.com).
+
+                            </small>
+
 
                             <button
                                 type="submit"
@@ -111,34 +140,46 @@
 
                             </button>
 
+
                         </form>
+
 
                         <div
                             id="email-message"
                             class="message hidden">
                         </div>
 
+
                     </div>
 
 
+
+                    <!-- ================================================= -->
                     <!-- PASO 02 -->
+                    <!-- ================================================= -->
 
                     <div
                         id="code-section"
                         class="verification-section hidden">
 
+
                         <span class="step-number">
                             02
                         </span>
+
 
                         <h2>
                             Ingresa el código
                         </h2>
 
+
                         <p class="description">
-                            Enviamos un código de 6 dígitos
-                            a tu correo electrónico.
+
+                            Enviamos un código de
+                            6 dígitos a tu correo Gmail.
+
                         </p>
+
 
                         <div class="email-display">
 
@@ -147,11 +188,16 @@
 
                         </div>
 
+
                         <form id="code-form">
 
+
                             <label for="code">
+
                                 Código de verificación
+
                             </label>
+
 
                             <input
                                 id="code"
@@ -162,12 +208,16 @@
                                 autocomplete="one-time-code"
                                 required>
 
+
                             <div
                                 id="timer"
                                 class="timer">
+
                                 Código válido durante
                                 10:00
+
                             </div>
+
 
                             <button
                                 type="submit"
@@ -178,7 +228,9 @@
 
                             </button>
 
+
                         </form>
+
 
                         <button
                             type="button"
@@ -189,41 +241,56 @@
 
                         </button>
 
+
                         <div
                             id="code-message"
                             class="message hidden">
                         </div>
 
+
                     </div>
 
 
+
+                    <!-- ================================================= -->
                     <!-- PASO 03 -->
+                    <!-- ================================================= -->
 
                     <div
                         id="success-section"
                         class="verification-section hidden">
 
+
                         <div class="success-icon">
                             ✓
                         </div>
+
 
                         <span class="step-number">
                             03
                         </span>
 
+
                         <h2>
                             Correo verificado
                         </h2>
 
+
                         <p class="description">
+
                             El correo electrónico fue
                             verificado correctamente.
+
                         </p>
 
+
                         <div class="success-email">
+
                             <strong id="success-email">
                             </strong>
+
                         </div>
+
 
                         <button
                             type="button"
@@ -234,9 +301,12 @@
 
                         </button>
 
+
                     </div>
 
+
                 </div>
+
 
 
                 <!-- ================================================= -->
@@ -245,11 +315,14 @@
 
                 <aside class="system-card">
 
+
                     <div class="system-card-header">
+
 
                         <div class="system-icon">
                             ✓
                         </div>
+
 
                         <div>
 
@@ -263,14 +336,18 @@
 
                         </div>
 
+
                     </div>
+
 
 
                     <div class="component-list">
 
+
                         <div class="component">
 
                             <div>
+
                                 <strong>
                                     ASP.NET Core
                                 </strong>
@@ -278,6 +355,7 @@
                                 <span>
                                     API
                                 </span>
+
                             </div>
 
                             <b>
@@ -287,9 +365,11 @@
                         </div>
 
 
+
                         <div class="component">
 
                             <div>
+
                                 <strong>
                                     Marten
                                 </strong>
@@ -297,6 +377,7 @@
                                 <span>
                                     Document Store
                                 </span>
+
                             </div>
 
                             <b>
@@ -306,9 +387,11 @@
                         </div>
 
 
+
                         <div class="component">
 
                             <div>
+
                                 <strong>
                                     Supabase
                                 </strong>
@@ -316,6 +399,7 @@
                                 <span>
                                     PostgreSQL
                                 </span>
+
                             </div>
 
                             <b>
@@ -325,9 +409,11 @@
                         </div>
 
 
+
                         <div class="component">
 
                             <div>
+
                                 <strong>
                                     Gmail SMTP
                                 </strong>
@@ -335,6 +421,7 @@
                                 <span>
                                     Servicio de correo
                                 </span>
+
                             </div>
 
                             <b>
@@ -343,14 +430,18 @@
 
                         </div>
 
+
                     </div>
+
 
 
                     <div class="flow">
 
+
                         <h3>
                             Flujo
                         </h3>
+
 
                         <div class="flow-items">
 
@@ -359,7 +450,7 @@
                             </span>
 
                             →
-                            
+
                             <span>
                                 API
                             </span>
@@ -371,6 +462,7 @@
                             </span>
 
                         </div>
+
 
                         <div class="flow-items">
 
@@ -386,11 +478,15 @@
 
                         </div>
 
+
                     </div>
+
 
                 </aside>
 
+
             </section>
+
 
 
             <!-- ================================================= -->
@@ -399,7 +495,9 @@
 
             <section class="history-panel">
 
+
                 <div class="history-header">
+
 
                     <div>
 
@@ -407,9 +505,11 @@
                             04
                         </span>
 
+
                         <h2>
                             Historial de verificaciones
                         </h2>
+
 
                         <p>
                             Últimos registros almacenados
@@ -417,6 +517,7 @@
                         </p>
 
                     </div>
+
 
                     <button
                         type="button"
@@ -427,6 +528,7 @@
 
                     </button>
 
+
                 </div>
 
 
@@ -435,14 +537,19 @@
                     class="history-container">
 
                     <div class="history-empty">
+
                         Cargando historial...
+
                     </div>
 
                 </div>
 
+
             </section>
 
+
         </main>
+
 
 
         <!-- ================================================= -->
@@ -456,7 +563,9 @@
 
         </footer>
 
+
     </div>
+
 
 
     <script src="app.js"></script>

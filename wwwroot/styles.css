@@ -1,5 +1,13 @@
+/* ======================================================
+   RESET
+   ====================================================== */
+
 * {
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
@@ -16,6 +24,8 @@ body {
     background: #f3f6fa;
 
     color: #172033;
+
+    -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -33,7 +43,7 @@ button {
 
 
 /* ======================================================
-   CONTENEDOR
+   CONTENEDOR PRINCIPAL
    ====================================================== */
 
 .app-container {
@@ -83,30 +93,43 @@ button {
 
     background: #172033;
 
-    color: white;
+    color: #ffffff;
 
     border-radius: 17px;
 
     font-size: 26px;
 
     font-weight: 800;
+
+    box-shadow:
+        0 8px 20px
+        rgba(23, 32, 51, 0.15);
 }
 
 .brand h1 {
     margin: 0;
 
+    color: #172033;
+
     font-size: 28px;
+
+    font-weight: 800;
 
     letter-spacing: -0.7px;
 }
 
 .brand p {
-    margin: 2px 0 0;
+    margin: 3px 0 0;
 
     color: #64748b;
 
     font-size: 15px;
 }
+
+
+/* ======================================================
+   ESTADO DEL SISTEMA
+   ====================================================== */
 
 .system-status {
     display: flex;
@@ -115,7 +138,7 @@ button {
 
     gap: 10px;
 
-    background: white;
+    background: #ffffff;
 
     border: 1px solid #dfe5ed;
 
@@ -126,6 +149,12 @@ button {
     color: #334155;
 
     font-size: 14px;
+
+    font-weight: 500;
+
+    box-shadow:
+        0 4px 15px
+        rgba(15, 23, 42, 0.03);
 }
 
 .status-dot {
@@ -133,9 +162,15 @@ button {
 
     height: 9px;
 
+    flex-shrink: 0;
+
     border-radius: 50%;
 
     background: #16a34a;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(22, 163, 74, 0.10);
 }
 
 
@@ -157,11 +192,11 @@ button {
 
 
 /* ======================================================
-   TARJETA VERIFICACIÓN
+   TARJETA DE VERIFICACIÓN
    ====================================================== */
 
 .verification-card {
-    background: white;
+    background: #ffffff;
 
     border: 1px solid #dfe5ed;
 
@@ -177,6 +212,8 @@ button {
 }
 
 .verification-section {
+    width: 100%;
+
     max-width: 820px;
 }
 
@@ -197,11 +234,15 @@ button {
 .verification-section h2 {
     margin: 0;
 
+    color: #111827;
+
     font-size: 34px;
 
-    letter-spacing: -1px;
+    line-height: 1.2;
 
-    color: #111827;
+    font-weight: 800;
+
+    letter-spacing: -1px;
 }
 
 .description {
@@ -225,11 +266,11 @@ label {
 
     margin-bottom: 9px;
 
+    color: #172033;
+
     font-size: 14px;
 
     font-weight: 700;
-
-    color: #172033;
 }
 
 input {
@@ -241,7 +282,7 @@ input {
 
     padding: 17px 18px;
 
-    background: white;
+    background: #ffffff;
 
     color: #172033;
 
@@ -250,17 +291,52 @@ input {
     font-size: 16px;
 
     transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+input::placeholder {
+    color: #94a3b8;
 }
 
 input:focus {
     border-color: #172033;
 
+    background: #ffffff;
+
     box-shadow:
         0 0 0 4px
         rgba(23, 32, 51, 0.08);
 }
+
+input:disabled {
+    background: #f5f7fa;
+
+    cursor: not-allowed;
+}
+
+
+/* ======================================================
+   AYUDA DEL CAMPO DE CORREO
+   ====================================================== */
+
+.input-help {
+    display: block;
+
+    margin-top: 8px;
+
+    color: #718096;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+/* ======================================================
+   BOTÓN PRINCIPAL
+   ====================================================== */
 
 .primary-button {
     width: 100%;
@@ -275,19 +351,24 @@ input:focus {
 
     background: #172033;
 
-    color: white;
+    color: #ffffff;
 
     font-weight: 700;
 
     font-size: 16px;
 
     transition:
-        transform 0.15s,
-        background 0.2s;
+        transform 0.15s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .primary-button:hover {
     background: #0f172a;
+
+    box-shadow:
+        0 8px 18px
+        rgba(15, 23, 42, 0.14);
 }
 
 .primary-button:active {
@@ -298,6 +379,8 @@ input:focus {
     opacity: 0.6;
 
     cursor: not-allowed;
+
+    box-shadow: none;
 }
 
 
@@ -313,23 +396,29 @@ input:focus {
     border-radius: 10px;
 
     font-size: 14px;
+
+    line-height: 1.5;
 }
 
 .message.success {
     background: #eaf8ef;
 
     color: #087443;
+
+    border: 1px solid #ccebd7;
 }
 
 .message.error {
     background: #fff0f0;
 
     color: #b42318;
+
+    border: 1px solid #f4cccc;
 }
 
 
 /* ======================================================
-   CÓDIGO
+   PASO DE CÓDIGO
    ====================================================== */
 
 .email-display {
@@ -344,6 +433,12 @@ input:focus {
     margin-bottom: 24px;
 
     color: #172033;
+
+    word-break: break-word;
+}
+
+.email-display strong {
+    font-size: 15px;
 }
 
 .timer {
@@ -361,7 +456,7 @@ input:focus {
 
     margin: 17px auto 0;
 
-    background: none;
+    background: transparent;
 
     border: 0;
 
@@ -370,15 +465,19 @@ input:focus {
     font-size: 14px;
 
     font-weight: 600;
+
+    padding: 4px 8px;
 }
 
 .text-button:hover {
+    color: #172033;
+
     text-decoration: underline;
 }
 
 
 /* ======================================================
-   ÉXITO
+   ESTADO DE ÉXITO
    ====================================================== */
 
 .success-icon {
@@ -403,6 +502,8 @@ input:focus {
     font-weight: 800;
 
     margin-bottom: 24px;
+
+    border: 1px solid #ccebd7;
 }
 
 .success-email {
@@ -415,15 +516,17 @@ input:focus {
     border-radius: 11px;
 
     margin-bottom: 10px;
+
+    word-break: break-word;
 }
 
 
 /* ======================================================
-   TARJETA SISTEMA
+   TARJETA DEL SISTEMA
    ====================================================== */
 
 .system-card {
-    background: white;
+    background: #ffffff;
 
     border: 1px solid #dfe5ed;
 
@@ -451,6 +554,8 @@ input:focus {
 
     height: 48px;
 
+    flex-shrink: 0;
+
     display: flex;
 
     align-items: center;
@@ -461,13 +566,21 @@ input:focus {
 
     background: #f1f3f6;
 
+    color: #172033;
+
     font-size: 22px;
+
+    font-weight: 700;
 }
 
 .system-card-header h2 {
     margin: 0;
 
+    color: #172033;
+
     font-size: 18px;
+
+    font-weight: 800;
 }
 
 .system-card-header p {
@@ -478,6 +591,15 @@ input:focus {
     font-size: 14px;
 }
 
+
+/* ======================================================
+   COMPONENTES
+   ====================================================== */
+
+.component-list {
+    width: 100%;
+}
+
 .component {
     display: flex;
 
@@ -485,9 +607,15 @@ input:focus {
 
     align-items: center;
 
+    gap: 20px;
+
     padding: 17px 0;
 
     border-bottom: 1px solid #e9edf2;
+}
+
+.component:last-child {
+    border-bottom: 0;
 }
 
 .component strong,
@@ -496,7 +624,11 @@ input:focus {
 }
 
 .component strong {
+    color: #172033;
+
     font-size: 15px;
+
+    font-weight: 700;
 }
 
 .component span {
@@ -511,7 +643,16 @@ input:focus {
     color: #087443;
 
     font-size: 13px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
 }
+
+
+/* ======================================================
+   FLUJO DEL SISTEMA
+   ====================================================== */
 
 .flow {
     margin-top: 30px;
@@ -524,7 +665,11 @@ input:focus {
 .flow h3 {
     margin: 0 0 16px;
 
+    color: #172033;
+
     font-size: 15px;
+
+    font-weight: 800;
 }
 
 .flow-items {
@@ -539,6 +684,8 @@ input:focus {
     margin-bottom: 9px;
 
     color: #94a3b8;
+
+    font-size: 14px;
 }
 
 .flow-items span {
@@ -551,6 +698,8 @@ input:focus {
     padding: 7px 11px;
 
     font-size: 12px;
+
+    font-weight: 600;
 }
 
 
@@ -561,7 +710,7 @@ input:focus {
 .history-panel {
     margin-top: 30px;
 
-    background: white;
+    background: #ffffff;
 
     border: 1px solid #dfe5ed;
 
@@ -586,12 +735,26 @@ input:focus {
     margin-bottom: 25px;
 }
 
+.section-number {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
 .history-header h2 {
     margin: 7px 0;
 
     color: #172033;
 
     font-size: 22px;
+
+    font-weight: 800;
 
     letter-spacing: -0.4px;
 }
@@ -604,10 +767,15 @@ input:focus {
     font-size: 14px;
 }
 
+
+/* ======================================================
+   BOTÓN SECUNDARIO
+   ====================================================== */
+
 .secondary-button {
     border: 1px solid #d8dee8;
 
-    background: white;
+    background: #ffffff;
 
     color: #172033;
 
@@ -617,16 +785,43 @@ input:focus {
 
     font-weight: 600;
 
+    font-size: 14px;
+
     cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
 }
 
 .secondary-button:hover {
     background: #f5f7fa;
+
+    border-color: #c7cfdb;
 }
 
+.secondary-button:active {
+    transform: translateY(1px);
+}
+
+
+/* ======================================================
+   CONTENEDOR DEL HISTORIAL
+   ====================================================== */
+
 .history-container {
+    width: 100%;
+
     overflow-x: auto;
 }
+
+
+/* ======================================================
+   FILAS DEL HISTORIAL
+   ====================================================== */
 
 .history-row {
     display: grid;
@@ -649,9 +844,13 @@ input:focus {
 }
 
 .history-email {
+    color: #172033;
+
     font-weight: 600;
 
-    color: #172033;
+    font-size: 15px;
+
+    word-break: break-word;
 }
 
 .history-date {
@@ -666,8 +865,17 @@ input:focus {
     font-size: 14px;
 }
 
+
+/* ======================================================
+   ESTADOS DEL HISTORIAL
+   ====================================================== */
+
 .history-status {
     display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
 
     padding: 6px 10px;
 
@@ -676,37 +884,69 @@ input:focus {
     font-size: 12px;
 
     font-weight: 700;
+
+    white-space: nowrap;
 }
+
+
+/* VERIFICADO */
 
 .history-status.verificado {
     background: #eaf8ef;
 
     color: #087443;
+
+    border: 1px solid #ccebd7;
 }
+
+
+/* PENDIENTE */
 
 .history-status.pendiente {
     background: #fff7df;
 
     color: #9a6700;
+
+    border: 1px solid #f4e3a8;
 }
+
+
+/* EXPIRADO */
 
 .history-status.expirado {
     background: #f1f3f5;
 
     color: #667085;
+
+    border: 1px solid #e0e3e7;
 }
+
+
+/* BLOQUEADO */
 
 .history-status.bloqueado {
     background: #fff0f0;
 
     color: #b42318;
+
+    border: 1px solid #f4cccc;
 }
+
+
+/* REEMPLAZADO */
 
 .history-status.reemplazado {
     background: #eef2f7;
 
     color: #475467;
+
+    border: 1px solid #dce2ea;
 }
+
+
+/* ======================================================
+   HISTORIAL VACÍO
+   ====================================================== */
 
 .history-empty {
     padding: 25px;
@@ -714,10 +954,16 @@ input:focus {
     text-align: center;
 
     color: #718096;
+
+    font-size: 14px;
 }
 
 .history-empty.error {
     color: #b42318;
+
+    background: #fff8f8;
+
+    border-radius: 10px;
 }
 
 
@@ -737,7 +983,35 @@ footer {
 
 
 /* ======================================================
-   RESPONSIVE
+   RESPONSIVE - TABLET
+   ====================================================== */
+
+@media (max-width: 1100px) {
+
+    .main-grid {
+        grid-template-columns:
+            minmax(0, 1.6fr)
+            minmax(300px, 1fr);
+
+        gap: 22px;
+    }
+
+    .verification-card {
+        padding: 48px 40px;
+    }
+
+    .system-card {
+        padding: 28px;
+    }
+
+    .verification-section h2 {
+        font-size: 31px;
+    }
+}
+
+
+/* ======================================================
+   RESPONSIVE - MÓVIL GRANDE
    ====================================================== */
 
 @media (max-width: 900px) {
@@ -749,8 +1023,20 @@ footer {
     .verification-card {
         min-height: auto;
     }
+
+    .system-card {
+        min-height: auto;
+    }
+
+    .history-row {
+        min-width: 680px;
+    }
 }
 
+
+/* ======================================================
+   RESPONSIVE - MÓVIL
+   ====================================================== */
 
 @media (max-width: 600px) {
 
@@ -763,37 +1049,137 @@ footer {
         padding-top: 15px;
     }
 
+
+    /* HEADER */
+
     .topbar {
         align-items: flex-start;
 
         gap: 15px;
 
         flex-direction: column;
+
+        margin-bottom: 24px;
+    }
+
+    .brand {
+        gap: 12px;
+    }
+
+    .brand-logo {
+        width: 52px;
+
+        height: 52px;
+
+        border-radius: 14px;
+
+        font-size: 23px;
     }
 
     .brand h1 {
         font-size: 23px;
     }
 
+    .brand p {
+        font-size: 13px;
+    }
+
+    .system-status {
+        font-size: 13px;
+
+        padding: 9px 14px;
+    }
+
+
+    /* VERIFICACIÓN */
+
     .verification-card {
         padding: 35px 25px;
+
+        border-radius: 18px;
     }
 
     .verification-section h2 {
         font-size: 28px;
     }
 
+    .description {
+        font-size: 15px;
+
+        margin-bottom: 27px;
+    }
+
+
+    /* SISTEMA */
+
     .system-card {
         padding: 25px;
+
+        border-radius: 18px;
     }
+
+
+    /* HISTORIAL */
 
     .history-panel {
         padding: 24px;
+
+        border-radius: 18px;
     }
 
     .history-header {
         align-items: flex-start;
 
         flex-direction: column;
+    }
+
+    .history-header h2 {
+        font-size: 20px;
+    }
+
+    .secondary-button {
+        width: 100%;
+    }
+
+    .history-row {
+        min-width: 650px;
+    }
+}
+
+
+/* ======================================================
+   RESPONSIVE - MÓVIL PEQUEÑO
+   ====================================================== */
+
+@media (max-width: 400px) {
+
+    .app-container {
+        width: calc(100% - 18px);
+    }
+
+    .verification-card {
+        padding: 28px 19px;
+    }
+
+    .system-card {
+        padding: 20px;
+    }
+
+    .history-panel {
+        padding: 19px;
+    }
+
+    .verification-section h2 {
+        font-size: 25px;
+    }
+
+    .brand h1 {
+        font-size: 21px;
+    }
+
+    .brand-logo {
+        width: 48px;
+
+        height: 48px;
     }
 }

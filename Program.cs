@@ -23,6 +23,11 @@ var username = connectionString
 Console.WriteLine(
     $"USUARIO POSTGRESQL LEÍDO: {username}");
 
+
+// ======================================================
+// SERVICIOS
+// ======================================================
+
 builder.Services
     .AddMarten(options =>
     {
@@ -39,20 +44,35 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+
+// ======================================================
+// ARCHIVOS WEB
+// ======================================================
+
 app.UseDefaultFiles();
 
 app.UseStaticFiles();
+
+
+// ======================================================
+// OPENAPI
+// ======================================================
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+
+// ======================================================
+// HTTPS
+// ======================================================
+
 app.UseHttpsRedirection();
 
 
 // ======================================================
-// ENVIAR CÓDIGO DE VERIFICACIÓN
+// ENVIAR CÓDIGO
 // ======================================================
 
 app.MapPost(
@@ -61,6 +81,10 @@ app.MapPost(
         SendCodeRequest request,
         VerificationCodeService service) =>
     {
+        // ----------------------------------------------
+        // VALIDAR CORREO VACÍO
+        // ----------------------------------------------
+
         if (string.IsNullOrWhiteSpace(request.Email))
         {
             return Results.BadRequest(new
@@ -69,6 +93,25 @@ app.MapPost(
                     "El correo electrónico es obligatorio."
             });
         }
+
+
+        // ----------------------------------------------
+        // VALIDAR QUE SEA GMAIL
+        // ----------------------------------------------
+
+        if (!IsGmailAddress(request.Email))
+        {
+            return Results.BadRequest(new
+            {
+                message =
+                    "Solo se permiten direcciones de correo Gmail (@gmail.com)."
+            });
+        }
+
+
+        // ----------------------------------------------
+        // ENVIAR CÓDIGO
+        // ----------------------------------------------
 
         try
         {
@@ -84,6 +127,7 @@ app.MapPost(
         catch (Exception ex)
         {
             Console.WriteLine();
+
             Console.WriteLine(
                 "==========================================");
 
@@ -118,6 +162,10 @@ app.MapPost(
         VerifyCodeRequest request,
         VerificationCodeService service) =>
     {
+        // ----------------------------------------------
+        // VALIDAR CORREO
+        // ----------------------------------------------
+
         if (string.IsNullOrWhiteSpace(request.Email))
         {
             return Results.BadRequest(new
@@ -126,6 +174,25 @@ app.MapPost(
                     "El correo electrónico es obligatorio."
             });
         }
+
+
+        // ----------------------------------------------
+        // VALIDAR QUE SEA GMAIL
+        // ----------------------------------------------
+
+        if (!IsGmailAddress(request.Email))
+        {
+            return Results.BadRequest(new
+            {
+                message =
+                    "Solo se permiten direcciones de correo Gmail (@gmail.com)."
+            });
+        }
+
+
+        // ----------------------------------------------
+        // VALIDAR CÓDIGO VACÍO
+        // ----------------------------------------------
 
         if (string.IsNullOrWhiteSpace(request.Code))
         {
@@ -136,24 +203,33 @@ app.MapPost(
             });
         }
 
+
+        // ----------------------------------------------
+        // VERIFICAR CÓDIGO
+        // ----------------------------------------------
+
         var valid =
             await service.VerifyCodeAsync(
                 request.Email,
                 request.Code);
+
 
         if (!valid)
         {
             return Results.BadRequest(new
             {
                 verified = false,
+
                 message =
                     "Código incorrecto, expirado o inválido."
             });
         }
 
+
         return Results.Ok(new
         {
             verified = true,
+
             message =
                 "Correo electrónico verificado correctamente."
         });
@@ -161,7 +237,7 @@ app.MapPost(
 
 
 // ======================================================
-// HISTORIAL DE VERIFICACIONES
+// HISTORIAL
 // ======================================================
 
 app.MapGet(
@@ -180,11 +256,17 @@ app.MapGet(
         var result = history.Select(x => new
         {
             id = x.Id,
+
             email = x.Email,
+
             createdAt = x.CreatedAt,
+
             expiresAt = x.ExpiresAt,
+
             attempts = x.Attempts,
+
             status = x.Status,
+
             verifiedAt = x.VerifiedAt
         });
 
@@ -192,7 +274,30 @@ app.MapGet(
     });
 
 
+// ======================================================
+// INICIAR APLICACIÓN
+// ======================================================
+
 app.Run();
+
+
+// ======================================================
+// VALIDACIÓN DE GMAIL
+// ======================================================
+
+static bool IsGmailAddress(string email)
+{
+    if (string.IsNullOrWhiteSpace(email))
+    {
+        return false;
+    }
+
+    email = email.Trim();
+
+    return email.EndsWith(
+        "@gmail.com",
+        StringComparison.OrdinalIgnoreCase);
+}
 
 
 // ======================================================
