@@ -1,10 +1,10 @@
-# MARTEN-SUPABASE
+# Marten + Supabase
 
-Sistema de verificación de códigos por correo electrónico desarrollado con .NET 10, ASP.NET Core, Marten y PostgreSQL mediante Supabase.
+> Verification code API built with .NET 10, ASP.NET Core, Marten and PostgreSQL through Supabase.
 
-El proyecto implementa un flujo completo de generación, envío, almacenamiento y validación de códigos de verificación mediante correo electrónico, utilizando persistencia documental con Marten y PostgreSQL.
+The project implements a complete workflow for generating, sending, storing, and validating email verification codes using Marten document persistence and PostgreSQL.
 
-## Tecnologías
+## Technologies
 
 ### Backend
 
@@ -15,13 +15,13 @@ El proyecto implementa un flujo completo de generación, envío, almacenamiento 
 - REST API
 - OpenAPI
 
-### Persistencia
+### Persistence
 
 - PostgreSQL
 - Supabase
 - Marten Document Store
 
-### Correo electrónico
+### Email
 
 - MailKit
 - MimeKit
@@ -35,14 +35,14 @@ El proyecto implementa un flujo completo de generación, envío, almacenamiento 
 - JavaScript
 - ASP.NET Core Static Files
 
-### Configuración
+### Configuration
 
 - DotNetEnv
 - Variables de entorno
 
-## Arquitectura
+## Architecture
 
-El proyecto separa la lógica de dominio, persistencia, envío de correo y presentación web.
+The project separates web presentation, verification logic, document persistence, and email delivery.
 
 ```text
 MARTEN_SUPABASE/
@@ -63,7 +63,7 @@ MARTEN_SUPABASE/
 └── README.md
 ```
 
-### Flujo de arquitectura
+### Architecture Flow
 
 ```text
 Usuario
@@ -91,11 +91,11 @@ Marten
 PostgreSQL / Supabase
 ```
 
-## Funcionamiento
+## How It Works
 
-El sistema permite solicitar un código de verificación de 6 dígitos para una cuenta Gmail.
+The system allows users to request a six-digit verification code for a Gmail account.
 
-El flujo principal es:
+The main workflow is:
 
 1. El usuario ingresa una dirección de correo Gmail.
 2. ASP.NET Core valida que el correo termine en `@gmail.com`.
@@ -110,9 +110,9 @@ El flujo principal es:
 11. Si la verificación es correcta, el registro se marca como utilizado y verificado.
 12. El historial permite consultar los últimos 20 registros.
 
-## Modelo de verificación
+## Verification Model
 
-Cada registro `VerificationCode` contiene información relacionada con el proceso de verificación:
+Each `VerificationCode` record contains information related to the verification process:
 
 - `Id` — Identificador único.
 - `Email` — Correo Gmail asociado.
@@ -124,9 +124,9 @@ Cada registro `VerificationCode` contiene información relacionada con el proces
 - `Status` — Estado actual de la verificación.
 - `VerifiedAt` — Fecha de verificación, cuando corresponde.
 
-## Estados
+## Verification States
 
-El sistema maneja los siguientes estados:
+The system uses the following states:
 
 | Estado | Descripción |
 |---|---|
@@ -136,7 +136,7 @@ El sistema maneja los siguientes estados:
 | `Bloqueado` | Se alcanzó el límite de intentos de verificación. |
 | `Reemplazado` | El código fue reemplazado por una nueva solicitud. |
 
-## Reglas de verificación
+## Verification Rules
 
 - Los correos aceptados deben pertenecer al dominio `@gmail.com`.
 - Los códigos tienen 6 dígitos.
@@ -146,11 +146,11 @@ El sistema maneja los siguientes estados:
 - El código original no se almacena directamente en la base de datos; se almacena su hash SHA-256.
 - Después de una verificación correcta, el código queda marcado como utilizado.
 
-## API REST
+## REST API
 
 ### `POST /auth/send-code`
 
-Genera un nuevo código de verificación y lo envía al correo Gmail indicado.
+Generates a new verification code and sends it to the specified Gmail address.
 
 Ejemplo de solicitud:
 
@@ -162,7 +162,7 @@ Ejemplo de solicitud:
 
 ### `POST /auth/verify-code`
 
-Verifica el código introducido por el usuario.
+Verifies the code submitted by the user.
 
 Ejemplo de solicitud:
 
@@ -175,9 +175,9 @@ Ejemplo de solicitud:
 
 ### `GET /auth/history`
 
-Devuelve los últimos 20 registros de verificación ordenados por fecha de creación descendente.
+Returns the latest 20 verification records ordered by creation date in descending order.
 
-La respuesta incluye información como:
+The response includes information such as:
 
 - ID
 - Correo
@@ -187,11 +187,11 @@ La respuesta incluye información como:
 - Estado
 - Fecha de verificación
 
-## Persistencia con Marten
+## Persistence with Marten
 
-Marten se utiliza como document store sobre PostgreSQL.
+Marten is used as a document store on top of PostgreSQL.
 
-El modelo `VerificationCode` se registra como documento mediante la configuración de ASP.NET Core:
+The `VerificationCode` model is registered as a document through the ASP.NET Core configuration:
 
 ```text
 ASP.NET Core
@@ -206,13 +206,13 @@ PostgreSQL
 Supabase
 ```
 
-Las operaciones de creación, consulta y actualización de los registros se realizan mediante sesiones de Marten.
+Records are created, queried, and updated through Marten sessions.
 
-## Envío de correo
+## Email Delivery
 
-El envío de los códigos se realiza mediante `SmtpEmailService`.
+Verification codes are sent through `SmtpEmailService`.
 
-La aplicación utiliza:
+The application uses:
 
 - MailKit
 - MimeKit
@@ -220,19 +220,19 @@ La aplicación utiliza:
 - Puerto `587`
 - STARTTLS
 
-Las credenciales SMTP se obtienen mediante variables de entorno y no forman parte del código fuente.
+SMTP credentials are loaded through environment variables and are not part of the source code.
 
-## Configuración
+## Configuration
 
 ### 1. Crear `.env`
 
-En la raíz del proyecto, crea un archivo llamado:
+In the project root, create a file named:
 
 ```text
 .env
 ```
 
-Utiliza `.env.example` como referencia:
+Use `.env.example` as a reference:
 
 ```env
 SUPABASE_CONNECTION_STRING="Host=...;Port=5432;Database=postgres;Username=...;Password=...;SSL Mode=Require"
@@ -245,53 +245,53 @@ SMTP_FROM=tu_correo@gmail.com
 SMTP_FROM_NAME=Marten Supabase
 ```
 
-Completa los valores con tus propias credenciales y configuración.
+Replace the placeholder values with your own credentials and configuration.
 
 > **Importante:** `.env` contiene información sensible y debe permanecer únicamente en el entorno local. No debe subirse a GitHub.
 
-## Ejecución
+## Running the Application
 
-### Restaurar dependencias
+### Restore Dependencies
 
 ```bash
 dotnet restore
 ```
 
-### Ejecutar la aplicación
+### Run the Application
 
 ```bash
 dotnet run --no-launch-profile
 ```
 
-La aplicación se ejecuta localmente según la configuración de lanzamiento disponible.
+The application runs locally according to the available launch configuration.
 
-En el entorno utilizado durante el desarrollo, puede accederse mediante:
+During development, it can be accessed at:
 
 ```text
 http://localhost:5000
 ```
 
-## Prueba del sistema
+## Testing the System
 
-### Solicitar un código
+### Request a Verification Code
 
-1. Abrir la interfaz web.
-2. Introducir una cuenta Gmail.
-3. Solicitar el código de verificación.
-4. Revisar el correo recibido.
+1. Open the web interface.
+2. Enter a Gmail address.
+3. Request a verification code.
+4. Check the received email.
 
-### Verificar el código
+### Verify the Code
 
-1. Introducir el código de 6 dígitos.
-2. Enviar la solicitud de verificación.
-3. Comprobar el resultado.
-4. Consultar el historial para verificar la persistencia del registro.
+1. Enter the six-digit code.
+2. Submit the verification request.
+3. Check the verification result.
+4. Review the history to confirm that the record was persisted.
 
-## Estructura de servicios
+## Service Structure
 
 ### `VerificationCodeService`
 
-Contiene la lógica principal del proceso de verificación:
+Contains the main verification logic:
 
 - Generación de códigos.
 - Hash SHA-256.
@@ -303,15 +303,15 @@ Contiene la lógica principal del proceso de verificación:
 
 ### `SmtpEmailService`
 
-Implementa el envío de correos mediante Gmail SMTP utilizando MailKit.
+Implements email delivery through Gmail SMTP using MailKit.
 
 ### `IEmailService`
 
-Define el contrato utilizado por el servicio de envío de correo.
+Defines the contract used by the email delivery service.
 
-## Seguridad y configuración
+## Security and Configuration
 
-El proyecto utiliza varias medidas para controlar el proceso de verificación:
+The project uses several controls around the verification workflow:
 
 - Generación de códigos mediante `RandomNumberGenerator`.
 - Almacenamiento del código mediante hash SHA-256.
@@ -321,9 +321,9 @@ El proyecto utiliza varias medidas para controlar el proceso de verificación:
 - Credenciales externas mediante variables de entorno.
 - `.env` excluido del repositorio mediante `.gitignore`.
 
-## Proyecto
+## Project
 
-MARTEN-SUPABASE demuestra la integración de:
+Marten + Supabase demonstrates the integration of:
 
 ```text
 .NET 10
@@ -339,12 +339,12 @@ MailKit / Gmail SMTP
 HTML / CSS / JavaScript
 ```
 
-El proyecto combina una API REST, persistencia documental, envío de correo electrónico y una interfaz web en una aplicación .NET.
+The project combines a REST API, document persistence, email delivery, and a web interface in a .NET application.
 
-## Autor
+## Author
 
 **Miguel Arbeláez Vallejo**
 
-Ingeniería de Sistemas — Fundación Universitaria CEIPA
+Systems Engineering — Fundación Universitaria CEIPA
 
-Proyecto académico y de portafolio.
+Academic and portfolio project.
