@@ -38,7 +38,7 @@ The project implements a complete workflow for generating, sending, storing, and
 ### Configuration
 
 - DotNetEnv
-- Variables de entorno
+- Environment variables
 
 ## Architecture
 
@@ -66,10 +66,10 @@ MARTEN_SUPABASE/
 ### Architecture Flow
 
 ```text
-Usuario
+User
    │
    ▼
-Interfaz Web
+Web Interface
 HTML / CSS / JavaScript
    │
    │ HTTP / JSON
@@ -97,54 +97,56 @@ The system allows users to request a six-digit verification code for a Gmail acc
 
 The main workflow is:
 
-1. El usuario ingresa una dirección de correo Gmail.
-2. ASP.NET Core valida que el correo termine en `@gmail.com`.
-3. `VerificationCodeService` genera un código aleatorio de 6 dígitos.
-4. El código se transforma mediante SHA-256.
-5. Se crea un documento `VerificationCode`.
-6. El hash del código se almacena mediante Marten en PostgreSQL/Supabase.
-7. El código original se envía al correo mediante Gmail SMTP y MailKit.
-8. El usuario introduce el código recibido.
-9. El sistema genera nuevamente el hash del código introducido.
-10. Se compara con el hash almacenado.
-11. Si la verificación es correcta, el registro se marca como utilizado y verificado.
-12. El historial permite consultar los últimos 20 registros.
+1. The user enters a Gmail address.
+2. ASP.NET Core validates that the email ends with `@gmail.com`.
+3. `VerificationCodeService` generates a random six-digit code.
+4. The code is transformed using SHA-256.
+5. A `VerificationCode` document is created.
+6. The code hash is stored through Marten in PostgreSQL/Supabase.
+7. The original code is sent to the email address through Gmail SMTP and MailKit.
+8. The user enters the received code.
+9. The system generates the hash of the submitted code again.
+10. The submitted hash is compared with the stored hash.
+11. If verification succeeds, the record is marked as used and verified.
+12. The history endpoint can be used to retrieve the latest 20 verification records.
 
 ## Verification Model
 
 Each `VerificationCode` record contains information related to the verification process:
 
-- `Id` — Identificador único.
-- `Email` — Correo Gmail asociado.
-- `CodeHash` — Hash SHA-256 del código.
-- `CreatedAt` — Fecha de creación.
-- `ExpiresAt` — Fecha de expiración.
-- `Used` — Indica si el código ya fue utilizado.
-- `Attempts` — Número de intentos realizados.
-- `Status` — Estado actual de la verificación.
-- `VerifiedAt` — Fecha de verificación, cuando corresponde.
+- `Id` — Unique identifier.
+- `Email` — Associated Gmail address.
+- `CodeHash` — SHA-256 hash of the verification code.
+- `CreatedAt` — Creation timestamp.
+- `ExpiresAt` — Expiration timestamp.
+- `Used` — Indicates whether the code has already been used.
+- `Attempts` — Number of verification attempts.
+- `Status` — Current verification status.
+- `VerifiedAt` — Verification timestamp, when applicable.
 
 ## Verification States
 
-The system uses the following states:
+The application uses the following internal status values:
 
-| Estado | Descripción |
+| Status | Description |
 |---|---|
-| `Pendiente` | Código creado y disponible para verificación. |
-| `Verificado` | Código validado correctamente. |
-| `Expirado` | El período de validez del código terminó. |
-| `Bloqueado` | Se alcanzó el límite de intentos de verificación. |
-| `Reemplazado` | El código fue reemplazado por una nueva solicitud. |
+| `Pendiente` | Code created and available for verification. |
+| `Verificado` | Code successfully verified. |
+| `Expirado` | Code validity period has expired. |
+| `Bloqueado` | Maximum verification attempts reached. |
+| `Reemplazado` | Code was replaced by a new verification request. |
+
+> The status values remain in Spanish because they are actual values used by the application.
 
 ## Verification Rules
 
-- Los correos aceptados deben pertenecer al dominio `@gmail.com`.
-- Los códigos tienen 6 dígitos.
-- El código expira después de 10 minutos.
-- Se permiten hasta 5 intentos de verificación.
-- Los códigos anteriores no utilizados se marcan como `Reemplazado` cuando se solicita uno nuevo.
-- El código original no se almacena directamente en la base de datos; se almacena su hash SHA-256.
-- Después de una verificación correcta, el código queda marcado como utilizado.
+- Accepted email addresses must belong to the `@gmail.com` domain.
+- Verification codes contain 6 digits.
+- Codes expire after 10 minutes.
+- A maximum of 5 verification attempts is allowed.
+- Previous unused codes are marked as `Reemplazado` when a new code is requested.
+- The original verification code is not stored directly in the database; its SHA-256 hash is stored instead.
+- After successful verification, the code is marked as used.
 
 ## REST API
 
@@ -152,11 +154,11 @@ The system uses the following states:
 
 Generates a new verification code and sends it to the specified Gmail address.
 
-Ejemplo de solicitud:
+Example request:
 
 ```json
 {
-  "email": "usuario@gmail.com"
+  "email": "user@gmail.com"
 }
 ```
 
@@ -164,11 +166,11 @@ Ejemplo de solicitud:
 
 Verifies the code submitted by the user.
 
-Ejemplo de solicitud:
+Example request:
 
 ```json
 {
-  "email": "usuario@gmail.com",
+  "email": "user@gmail.com",
   "code": "123456"
 }
 ```
@@ -180,12 +182,12 @@ Returns the latest 20 verification records ordered by creation date in descendin
 The response includes information such as:
 
 - ID
-- Correo
-- Fecha de creación
-- Fecha de expiración
-- Intentos
-- Estado
-- Fecha de verificación
+- Email
+- Creation timestamp
+- Expiration timestamp
+- Verification attempts
+- Status
+- Verification timestamp
 
 ## Persistence with Marten
 
@@ -217,14 +219,14 @@ The application uses:
 - MailKit
 - MimeKit
 - Gmail SMTP
-- Puerto `587`
+- Port `587`
 - STARTTLS
 
-SMTP credentials are loaded through environment variables and are not part of the source code.
+SMTP credentials are loaded through environment variables and are not included in the source code.
 
 ## Configuration
 
-### 1. Crear `.env`
+### 1. Create `.env`
 
 In the project root, create a file named:
 
@@ -239,15 +241,15 @@ SUPABASE_CONNECTION_STRING="Host=...;Port=5432;Database=postgres;Username=...;Pa
 
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=tu_correo@gmail.com
-SMTP_PASSWORD=tu_app_password
-SMTP_FROM=tu_correo@gmail.com
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
+SMTP_FROM=your_email@gmail.com
 SMTP_FROM_NAME=Marten Supabase
 ```
 
 Replace the placeholder values with your own credentials and configuration.
 
-> **Importante:** `.env` contiene información sensible y debe permanecer únicamente en el entorno local. No debe subirse a GitHub.
+> **Important:** `.env` contains sensitive information and must remain local. It must not be committed to GitHub.
 
 ## Running the Application
 
@@ -293,13 +295,13 @@ http://localhost:5000
 
 Contains the main verification logic:
 
-- Generación de códigos.
-- Hash SHA-256.
-- Persistencia mediante Marten.
-- Expiración.
-- Control de intentos.
-- Estados de verificación.
-- Validación de códigos.
+- Code generation.
+- SHA-256 hashing.
+- Persistence through Marten.
+- Code expiration.
+- Attempt limits.
+- Verification status management.
+- Code validation.
 
 ### `SmtpEmailService`
 
@@ -313,13 +315,13 @@ Defines the contract used by the email delivery service.
 
 The project uses several controls around the verification workflow:
 
-- Generación de códigos mediante `RandomNumberGenerator`.
-- Almacenamiento del código mediante hash SHA-256.
-- Expiración de 10 minutos.
-- Límite de 5 intentos.
-- Invalidación de códigos anteriores.
-- Credenciales externas mediante variables de entorno.
-- `.env` excluido del repositorio mediante `.gitignore`.
+- Cryptographically secure code generation with `RandomNumberGenerator`.
+- SHA-256 hashing of verification codes.
+- 10-minute code expiration.
+- Maximum of 5 verification attempts.
+- Invalidation of previous codes.
+- External credentials through environment variables.
+- `.env` excluded from the repository through `.gitignore`.
 
 ## Project
 
