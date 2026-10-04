@@ -2,17 +2,43 @@ using DotNetEnv;
 using Marten;
 using MARTEN_SUPABASE.Services;
 
+
+// ============================================================
+// CARGA DE VARIABLES DE ENTORNO
+// ============================================================
+
+// DotNetEnv permite leer las variables que tenemos
+// almacenadas en el archivo .env.
+//
+// Allí tenemos información sensible como:
+// - Conexión a Supabase
+// - Usuario SMTP
+// - Contraseña/App Password de Gmail
+//
+// De esta manera NO escribimos las contraseñas
+// directamente dentro del código fuente.
+
 Env.Load();
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 // ============================================================
-// CONFIGURACIÓN DE MARTEN
+// CONFIGURACIÓN DE MARTEN + SUPABASE
 // ============================================================
 
 // Obtenemos la cadena de conexión de Supabase
-// desde las variables de entorno.
+// desde la variable de entorno.
+//
+// La cadena contiene:
+// - Host
+// - Puerto
+// - Base de datos
+// - Usuario
+// - Contraseña
+// - SSL
+
 var connectionString =
     Environment.GetEnvironmentVariable(
         "SUPABASE_CONNECTION_STRING")
@@ -20,14 +46,27 @@ var connectionString =
         "SUPABASE_CONNECTION_STRING no está configurada.");
 
 
-// Registramos Marten utilizando PostgreSQL.
+// Registramos Marten en la aplicación.
+//
+// Marten funciona como Document Store y utiliza
+// PostgreSQL como sistema de almacenamiento.
+//
+// En nuestro proyecto PostgreSQL está alojado
+// en Supabase.
+
 builder.Services.AddMarten(options =>
 {
-    // Configuramos la conexión a Supabase.
+    // Indicamos a Marten dónde está
+    // nuestra base de datos PostgreSQL.
+
     options.Connection(connectionString);
 
-    // Registramos VerificationCode como documento.
-    options.Schema.For<MARTEN_SUPABASE.Models.VerificationCode>();
+
+    // Registramos VerificationCode como documento
+    // que será administrado y almacenado por Marten.
+
+    options.Schema.For<
+        MARTEN_SUPABASE.Models.VerificationCode>();
 });
 
 
@@ -35,21 +74,39 @@ builder.Services.AddMarten(options =>
 // INYECCIÓN DE DEPENDENCIAS
 // ============================================================
 
-// Registramos el servicio de correo.
-// Cuando se solicite IEmailService,
+// Registramos el servicio encargado
+// del envío de correos.
+//
+// Cuando la aplicación necesite IEmailService,
 // ASP.NET Core utilizará SmtpEmailService.
+
 builder.Services.AddScoped<
     IEmailService,
     SmtpEmailService>();
 
 
 // Registramos el servicio que contiene
-// la lógica de los códigos de verificación.
+// toda la lógica de los códigos.
+//
+// Aquí se encuentra la lógica para:
+// - Generar códigos
+// - Guardarlos
+// - Verificarlos
+// - Controlar expiración
+// - Controlar intentos
+// - Cambiar estados
+
 builder.Services.AddScoped<
     VerificationCodeService>();
 
 
-// Servicios de OpenAPI para documentación de la API.
+// ============================================================
+// OPENAPI
+// ============================================================
+
+// Permite generar documentación de los
+// endpoints de la API durante desarrollo.
+
 builder.Services.AddOpenApi();
 
 
@@ -60,11 +117,21 @@ var app = builder.Build();
 // ARCHIVOS ESTÁTICOS
 // ============================================================
 
-// Permite servir index.html, CSS y JavaScript
-// desde la carpeta wwwroot.
+// Permite que ASP.NET Core sirva los archivos
+// que están dentro de wwwroot:
+//
+// index.html
+// styles.css
+// app.js
+
 app.UseDefaultFiles();
+
 app.UseStaticFiles();
 
+
+// ============================================================
+// OPENAPI EN DESARROLLO
+// ============================================================
 
 if (app.Environment.IsDevelopment())
 {
@@ -72,23 +139,62 @@ if (app.Environment.IsDevelopment())
 }
 
 
-// Redirección HTTPS cuando corresponde.
+// ============================================================
+// HTTPS
+// ============================================================
+
+// Utiliza HTTPS cuando existe una configuración
+// HTTPS disponible.
+
 app.UseHttpsRedirection();
 
 
 // ============================================================
-// VALIDACIÓN DE GMAIL
+// VALIDACIÓN DE CORREO GMAIL
 // ============================================================
 
-// Comprueba que el correo pertenezca a Gmail.
+// Esta función verifica que el correo introducido
+// por el usuario pertenezca al dominio Gmail.
+//
+// IMPORTANTE:
+//
+// NO estamos comprobando que sea nuestro correo.
+//
+// Estamos permitiendo cualquier cuenta Gmail.
+//
+// Ejemplos permitidos:
+//
+// usuario@gmail.com
+// profesor@gmail.com
+// cualquierpersona@gmail.com
+//
+// Ejemplos rechazados:
+//
+// usuario@hotmail.com
+// usuario@outlook.com
+// usuario@yahoo.com
+
 static bool IsGmailAddress(string email)
 {
+    // Si el correo está vacío,
+// devolvemos false.
+
     if (string.IsNullOrWhiteSpace(email))
     {
         return false;
     }
 
+
+    // Eliminamos espacios al principio
+    // y al final.
+
     email = email.Trim();
+
+
+    // Comprobamos que termine en @gmail.com.
+    //
+    // OrdinalIgnoreCase permite aceptar
+    // mayúsculas y minúsculas.
 
     return email.EndsWith(
         "@gmail.com",
@@ -97,8 +203,21 @@ static bool IsGmailAddress(string email)
 
 
 // ============================================================
-// ENDPOINT PARA ENVIAR CÓDIGO
+// ENDPOINT: ENVIAR CÓDIGO
 // ============================================================
+
+// Este endpoint recibe una solicitud POST:
+//
+// POST /auth/send-code
+//
+// El frontend envía el correo que escribió
+// el usuario.
+//
+// Ejemplo:
+//
+// {
+//     "email": "usuario@gmail.com"
+// }
 
 app.MapPost(
     "/auth/send-code",
@@ -106,7 +225,9 @@ app.MapPost(
         SendCodeRequest request,
         VerificationCodeService service) =>
     {
-        // Validamos que exista un correo.
+        // Primero comprobamos que
+        // el usuario haya escrito un correo.
+
         if (string.IsNullOrWhiteSpace(request.Email))
         {
             return Results.BadRequest(
@@ -114,7 +235,9 @@ app.MapPost(
         }
 
 
-        // Validamos que sea Gmail.
+        // Después verificamos que sea
+        // una cuenta Gmail.
+
         if (!IsGmailAddress(request.Email))
         {
             return Results.BadRequest(
@@ -124,18 +247,35 @@ app.MapPost(
 
         try
         {
-            // Solicitamos al servicio
-            // generar y enviar el código.
+            // Aquí empieza realmente
+            // el proceso de generación del código.
+            //
+            // Le pasamos al servicio EXACTAMENTE
+            // el correo que escribió el usuario.
+            //
+            // Por eso cualquier Gmail puede recibir
+            // su propio código.
+
             await service.SendCodeAsync(
                 request.Email);
+
+
+            // Si todo funciona correctamente,
+            // devolvemos una respuesta HTTP 200.
 
             return Results.Ok(
                 "Código de verificación enviado.");
         }
         catch (Exception ex)
         {
-            // Registramos el error para diagnóstico.
+            // Mostramos el error en la consola
+            // para facilitar el diagnóstico.
+
             Console.WriteLine(ex);
+
+
+            // Devolvemos un error HTTP 500
+            // al frontend.
 
             return Results.Problem(
                 detail: ex.Message,
@@ -145,8 +285,19 @@ app.MapPost(
 
 
 // ============================================================
-// ENDPOINT PARA VERIFICAR CÓDIGO
+// ENDPOINT: VERIFICAR CÓDIGO
 // ============================================================
+
+// Este endpoint recibe:
+//
+// POST /auth/verify-code
+//
+// Recibe:
+//
+// {
+//     "email": "usuario@gmail.com",
+//     "code": "123456"
+// }
 
 app.MapPost(
     "/auth/verify-code",
@@ -154,7 +305,8 @@ app.MapPost(
         VerifyCodeRequest request,
         VerificationCodeService service) =>
     {
-        // Validamos el correo.
+        // Validamos que exista un correo.
+
         if (string.IsNullOrWhiteSpace(request.Email))
         {
             return Results.BadRequest(
@@ -162,7 +314,8 @@ app.MapPost(
         }
 
 
-        // Validamos que sea Gmail.
+        // Volvemos a comprobar que sea Gmail.
+
         if (!IsGmailAddress(request.Email))
         {
             return Results.BadRequest(
@@ -170,7 +323,8 @@ app.MapPost(
         }
 
 
-        // Validamos que exista un código.
+        // Comprobamos que el código exista.
+
         if (string.IsNullOrWhiteSpace(request.Code))
         {
             return Results.BadRequest(
@@ -178,14 +332,18 @@ app.MapPost(
         }
 
 
-        // Ejecutamos la lógica de verificación.
+        // Enviamos el correo y el código
+        // al servicio de verificación.
+
         var verified =
             await service.VerifyCodeAsync(
                 request.Email,
                 request.Code);
 
 
-        // Si el código no es válido.
+        // Si el servicio devuelve false,
+        // el código no es válido.
+
         if (!verified)
         {
             return Results.BadRequest(
@@ -193,51 +351,90 @@ app.MapPost(
         }
 
 
-        // Si todo fue correcto.
+        // Si devuelve true,
+        // la verificación fue correcta.
+
         return Results.Ok(
             "Código verificado correctamente.");
     });
 
 
 // ============================================================
-// HISTORIAL
+// ENDPOINT: HISTORIAL
 // ============================================================
+
+// Este endpoint:
+//
+// GET /auth/history
+//
+// Consulta los registros almacenados
+// por Marten en PostgreSQL/Supabase.
 
 app.MapGet(
     "/auth/history",
     async (IDocumentStore store) =>
     {
-        // Abrimos una sesión de Marten.
+        // Abrimos una sesión ligera de Marten.
+//
+// LightweightSession permite trabajar
+// con la base de datos sin necesidad
+// de cargar funcionalidades adicionales.
+
         await using var session =
             store.LightweightSession();
 
 
-        // Consultamos los últimos 20 registros.
+        // Consultamos los documentos
+// VerificationCode almacenados.
+//
+// Los ordenamos del más reciente
+// al más antiguo.
+//
+// Limitamos la consulta a 20 registros.
+
         var history = await session
-            .Query<MARTEN_SUPABASE.Models.VerificationCode>()
-            .OrderByDescending(x => x.CreatedAt)
+            .Query<
+                MARTEN_SUPABASE.Models.VerificationCode>()
+            .OrderByDescending(
+                x => x.CreatedAt)
             .Take(20)
             .ToListAsync();
 
 
-        // Seleccionamos los campos
-        // que queremos mostrar.
+        // Seleccionamos solamente
+// los datos que queremos enviar
+// al frontend.
+
         var result = history.Select(x => new
         {
             id = x.Id,
+
             email = x.Email,
+
             createdAt = x.CreatedAt,
+
             expiresAt = x.ExpiresAt,
+
             attempts = x.Attempts,
+
             status = x.Status,
+
             verifiedAt = x.VerifiedAt
         });
 
 
-        // Devolvemos el historial como JSON.
+        // Devolvemos el historial
+// como JSON.
+
         return Results.Ok(result);
     });
 
+
+// ============================================================
+// INICIAR APLICACIÓN
+// ============================================================
+
+// Ejecuta el servidor ASP.NET Core.
 
 app.Run();
 
@@ -246,12 +443,23 @@ app.Run();
 // MODELOS DE REQUEST
 // ============================================================
 
-// Información necesaria para solicitar un código.
+// Este record representa la información
+// necesaria para solicitar un código.
+//
+// El frontend solamente necesita enviar
+// el correo.
+
 public record SendCodeRequest(
     string Email);
 
 
-// Información necesaria para verificar un código.
+// Este record representa la información
+// necesaria para verificar un código.
+//
+// Necesitamos:
+// - Correo
+// - Código recibido
+
 public record VerifyCodeRequest(
     string Email,
     string Code);
