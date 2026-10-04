@@ -2,52 +2,119 @@ namespace MARTEN_SUPABASE.Models;
 
 public class VerificationCode
 {
-    // Identificador único de cada registro.
-    // Cada código almacenado tendrá su propio ID.
+    // ============================================================
+    // IDENTIFICACIÓN DEL DOCUMENTO
+    // ============================================================
+
+    // Identificador único del código de verificación.
+    // Cada código almacenado por Marten tiene su propio ID.
     public Guid Id { get; set; }
 
 
-    // Correo Gmail asociado al código.
-    // Es el correo al que se enviará el código.
+    // ============================================================
+    // DATOS DEL USUARIO
+    // ============================================================
+
+    // Correo al que pertenece el código.
+    // El sistema utiliza este dato para encontrar
+    // el código correspondiente cuando se intenta verificar.
     public string Email { get; set; } = string.Empty;
 
 
-    // Hash SHA-256 del código de verificación.
-    // No almacenamos directamente el código original.
+    // ============================================================
+    // SEGURIDAD DEL CÓDIGO
+    // ============================================================
+
+    // NO almacenamos el código original.
+    //
+    // Aquí se guarda el HASH SHA-256 del código.
+    //
+    // Ejemplo:
+    //
+    // Código real:
+    // 583214
+    //
+    // Base de datos:
+    // HASH(583214)
+    //
+    // Esto evita almacenar directamente el código
+    // que recibió el usuario.
     public string CodeHash { get; set; } = string.Empty;
 
 
-    // Fecha y hora en la que se creó el código.
+    // ============================================================
+    // TIEMPO DE VIDA
+    // ============================================================
+
+    // Momento exacto en que se generó el código.
     public DateTime CreatedAt { get; set; }
 
 
-    // Fecha y hora límite para utilizar el código.
-    // El sistema establece una duración de 10 minutos.
+    // Momento exacto en que el código deja de ser válido.
+    //
+    // En nuestro sistema se establece 10 minutos después
+    // de la creación.
+    //
+    // Evento relacionado:
+    //
+    // Tiempo actual > ExpiresAt
+    //
+    // Transición:
+    //
+    // PENDIENTE → EXPIRADO
     public DateTime ExpiresAt { get; set; }
 
 
-    // Indica si el código ya fue utilizado.
-    // False = todavía disponible.
-    // True = ya utilizado.
+    // ============================================================
+    // CONTROL DE UTILIZACIÓN
+    // ============================================================
+
+    // Indica si el código ya dejó de estar disponible.
+    //
+    // false → todavía puede utilizarse.
+    // true  → ya fue utilizado o invalidado.
     public bool Used { get; set; }
 
 
-    // Número de intentos realizados por el usuario.
-    // Se utiliza para limitar los intentos de verificación.
+    // ============================================================
+    // CONTROL DE INTENTOS
+    // ============================================================
+
+    // Número de intentos realizados para verificar el código.
+    //
+    // Se incrementa cuando el usuario intenta verificar
+    // un código.
+    //
+    // Si se alcanza el límite de 5 intentos:
+    //
+    // PENDIENTE → BLOQUEADO
     public int Attempts { get; set; }
 
 
-    // Estado actual del código.
-    // Puede ser:
-    // Pendiente
-    // Verificado
-    // Expirado
-    // Bloqueado
-    // Reemplazado
+    // ============================================================
+    // ESTADO DEL CÓDIGO
+    // ============================================================
+
+    // Representa el estado actual dentro del ciclo de vida
+    // del código de verificación.
+    //
+    // Estados utilizados:
+    //
+    // Pendiente   → código creado y todavía disponible.
+    // Verificado  → código correcto.
+    // Expirado    → superó los 10 minutos.
+    // Bloqueado   → alcanzó el límite de intentos.
+    // Reemplazado → se generó un nuevo código.
     public string Status { get; set; } = "Pendiente";
 
 
-    // Fecha en la que el código fue verificado.
-    // Es nullable porque antes de verificarse no existe.
+    // ============================================================
+    // FECHA DE VERIFICACIÓN
+    // ============================================================
+
+    // Momento en que el código fue verificado correctamente.
+    //
+    // Es nullable porque mientras el código esté Pendiente,
+    // todavía no existe una fecha de verificación.
     public DateTime? VerifiedAt { get; set; }
 }
