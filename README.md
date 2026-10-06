@@ -1,10 +1,10 @@
 # Marten + Supabase
 
-> Verification code API built with .NET 10, ASP.NET Core, Marten and PostgreSQL through Supabase.
+> Email verification API built with .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase and MailKit.
 
-The project implements a complete workflow for generating, sending, storing, and validating email verification codes using Marten document persistence and PostgreSQL.
+Marten + Supabase is a backend-focused application that implements an end-to-end email verification workflow: secure code generation, SHA-256 hashing, persistence through Marten and PostgreSQL, email delivery through Gmail SMTP, expiration, attempt limits, and verification status management.
 
-## Technologies
+## 🧩 Technologies
 
 ### Backend
 
@@ -35,12 +35,12 @@ The project implements a complete workflow for generating, sending, storing, and
 - JavaScript
 - ASP.NET Core Static Files
 
-### Configuration
+### ⚙️ Configuration
 
 - DotNetEnv
 - Environment variables
 
-## Architecture
+## 🏗️ Architecture
 
 The project separates web presentation, verification logic, document persistence, and email delivery.
 
@@ -91,7 +91,7 @@ Marten
 PostgreSQL / Supabase
 ```
 
-## How It Works
+## 🔄 How It Works
 
 The system allows users to request a six-digit verification code for a Gmail account.
 
@@ -110,7 +110,7 @@ The main workflow is:
 11. If verification succeeds, the record is marked as used and verified.
 12. The history endpoint can be used to retrieve the latest 20 verification records.
 
-## Verification Model
+## 🗂️ Verification Model
 
 Each `VerificationCode` record contains information related to the verification process:
 
@@ -124,7 +124,7 @@ Each `VerificationCode` record contains information related to the verification 
 - `Status` — Current verification status.
 - `VerifiedAt` — Verification timestamp, when applicable.
 
-## Verification States
+## 📊 Verification States
 
 The application uses the following internal status values:
 
@@ -138,7 +138,7 @@ The application uses the following internal status values:
 
 > The status values remain in Spanish because they are actual values used by the application.
 
-## Verification Rules
+## 🔐 Verification Rules
 
 - Accepted email addresses must belong to the `@gmail.com` domain.
 - Verification codes contain 6 digits.
@@ -148,7 +148,7 @@ The application uses the following internal status values:
 - The original verification code is not stored directly in the database; its SHA-256 hash is stored instead.
 - After successful verification, the code is marked as used.
 
-## REST API
+## 🌐 REST API
 
 ### `POST /auth/send-code`
 
@@ -189,7 +189,7 @@ The response includes information such as:
 - Status
 - Verification timestamp
 
-## Persistence with Marten
+## 🗄️ Persistence with Marten
 
 Marten is used as a document store on top of PostgreSQL.
 
@@ -210,7 +210,7 @@ Supabase
 
 Records are created, queried, and updated through Marten sessions.
 
-## Email Delivery
+## 📧 Email Delivery
 
 Verification codes are sent through `SmtpEmailService`.
 
@@ -251,7 +251,7 @@ Replace the placeholder values with your own credentials and configuration.
 
 > **Important:** `.env` contains sensitive information and must remain local. It must not be committed to GitHub.
 
-## Running the Application
+## ▶️ Running the Application
 
 ### Restore Dependencies
 
@@ -273,7 +273,7 @@ During development, it can be accessed at:
 http://localhost:5000
 ```
 
-## Testing the System
+## 🧪 Testing the System
 
 ### Request a Verification Code
 
@@ -289,7 +289,7 @@ http://localhost:5000
 3. Check the verification result.
 4. Review the history to confirm that the record was persisted.
 
-## Service Structure
+## 🧱 Service Structure
 
 ### `VerificationCodeService`
 
@@ -311,7 +311,7 @@ Implements email delivery through Gmail SMTP using MailKit.
 
 Defines the contract used by the email delivery service.
 
-## Security and Configuration
+## 🔒 Security and Configuration
 
 The project uses several controls around the verification workflow:
 
@@ -323,9 +323,30 @@ The project uses several controls around the verification workflow:
 - External credentials through environment variables.
 - `.env` excluded from the repository through `.gitignore`.
 
-## Project
+## 🎯 What This Project Demonstrates
 
-Marten + Supabase demonstrates the integration of:
+Marten + Supabase demonstrates practical backend development through:
+
+- .NET 10 and ASP.NET Core minimal API endpoints.
+- Document-oriented persistence with Marten over PostgreSQL.
+- Supabase as the PostgreSQL hosting platform.
+- Transactional email delivery through MailKit and Gmail SMTP.
+- Secure random verification-code generation.
+- SHA-256 hashing before persistence.
+- Expiration and verification-attempt controls.
+- Environment-based configuration for sensitive credentials.
+- Separation between API endpoints, verification logic, persistence, and email delivery.
+
+## 📌 Project Status
+
+**Completed portfolio project.**
+
+The application was developed as an academic and portfolio project to demonstrate backend API development, PostgreSQL persistence, email integration, and verification workflow design.
+
+## 🧰 Project Stack
+
+Marten + Supabase integrates:
+
 
 ```text
 .NET 10
@@ -347,6 +368,4 @@ The project combines a REST API, document persistence, email delivery, and a web
 
 **Miguel Arbeláez Vallejo**
 
-Systems Engineering — Fundación Universitaria CEIPA
-
-Academic and portfolio project.
+Software Developer | Flutter & Dart | Full-Stack | Backend | AI/Data
