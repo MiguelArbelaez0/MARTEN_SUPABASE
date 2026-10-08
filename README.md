@@ -1,48 +1,43 @@
 # Marten + Supabase
 
-> Email verification API built with .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase and MailKit.
+> API de verificación de correo desarrollada con .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase y MailKit.
 
-Marten + Supabase is a backend-focused application that implements an end-to-end email verification workflow: secure code generation, SHA-256 hashing, persistence through Marten and PostgreSQL, email delivery through Gmail SMTP, expiration, attempt limits, and verification status management.
+Marten + Supabase es una aplicación enfocada en backend que implementa un flujo completo de verificación de correo: generación segura de códigos, hash SHA-256, persistencia mediante Marten y PostgreSQL, envío mediante Gmail SMTP, expiración, límite de intentos y gestión del estado de verificación.
 
-## 🧩 Technologies
+## 🧩 Tecnologías
 
 ### Backend
-
 - .NET 10
 - ASP.NET Core
 - C#
 - Marten 9.44.0
-- REST API
+- API REST
 - OpenAPI
 
-### Persistence
-
+### Persistencia
 - PostgreSQL
 - Supabase
 - Marten Document Store
 
-### Email
-
+### Correo
 - MailKit
 - MimeKit
 - Gmail SMTP
 - STARTTLS
 
-### Frontend
-
+### Interfaz
 - HTML
 - CSS
 - JavaScript
-- ASP.NET Core Static Files
+- Archivos estáticos de ASP.NET Core
 
-### ⚙️ Configuration
-
+### ⚙️ Configuración
 - DotNetEnv
-- Environment variables
+- Variables de entorno
 
-## 🏗️ Architecture
+## 🏗️ Arquitectura
 
-The project separates web presentation, verification logic, document persistence, and email delivery.
+El proyecto separa la presentación web, la lógica de verificación, la persistencia documental y el envío de correo.
 
 ```text
 MARTEN_SUPABASE/
@@ -63,13 +58,13 @@ MARTEN_SUPABASE/
 └── README.md
 ```
 
-### Architecture Flow
+### Flujo de arquitectura
 
 ```text
-User
+Usuario
    │
    ▼
-Web Interface
+Interfaz web
 HTML / CSS / JavaScript
    │
    │ HTTP / JSON
@@ -91,109 +86,89 @@ Marten
 PostgreSQL / Supabase
 ```
 
-## 🔄 How It Works
+## 🔄 Funcionamiento
 
-The system allows users to request a six-digit verification code for a Gmail account.
+El sistema permite solicitar un código de verificación de seis dígitos para una cuenta de Gmail.
 
-The main workflow is:
+Flujo principal:
 
-1. The user enters a Gmail address.
-2. ASP.NET Core validates that the email ends with `@gmail.com`.
-3. `VerificationCodeService` generates a random six-digit code.
-4. The code is transformed using SHA-256.
-5. A `VerificationCode` document is created.
-6. The code hash is stored through Marten in PostgreSQL/Supabase.
-7. The original code is sent to the email address through Gmail SMTP and MailKit.
-8. The user enters the received code.
-9. The system generates the hash of the submitted code again.
-10. The submitted hash is compared with the stored hash.
-11. If verification succeeds, the record is marked as used and verified.
-12. The history endpoint can be used to retrieve the latest 20 verification records.
+1. El usuario ingresa una dirección de Gmail.
+2. ASP.NET Core valida que el correo termine en `@gmail.com`.
+3. `VerificationCodeService` genera un código aleatorio de seis dígitos.
+4. El código se transforma mediante SHA-256.
+5. Se crea un documento `VerificationCode`.
+6. El hash se almacena mediante Marten en PostgreSQL/Supabase.
+7. El código original se envía al correo mediante Gmail SMTP y MailKit.
+8. El usuario introduce el código recibido.
+9. El sistema vuelve a generar el hash del código enviado.
+10. Se compara el hash enviado con el almacenado.
+11. Si la verificación es correcta, el registro se marca como utilizado y verificado.
+12. El endpoint de historial permite consultar los últimos 20 registros.
 
-## 🗂️ Verification Model
+## 🗂️ Modelo de verificación
 
-Each `VerificationCode` record contains information related to the verification process:
+Cada registro `VerificationCode` contiene:
 
-- `Id` — Unique identifier.
-- `Email` — Associated Gmail address.
-- `CodeHash` — SHA-256 hash of the verification code.
-- `CreatedAt` — Creation timestamp.
-- `ExpiresAt` — Expiration timestamp.
-- `Used` — Indicates whether the code has already been used.
-- `Attempts` — Number of verification attempts.
-- `Status` — Current verification status.
-- `VerifiedAt` — Verification timestamp, when applicable.
+- `Id` — Identificador único.
+- `Email` — Dirección de Gmail asociada.
+- `CodeHash` — Hash SHA-256 del código.
+- `CreatedAt` — Fecha y hora de creación.
+- `ExpiresAt` — Fecha y hora de expiración.
+- `Used` — Indica si el código ya fue utilizado.
+- `Attempts` — Número de intentos.
+- `Status` — Estado actual de la verificación.
+- `VerifiedAt` — Fecha y hora de verificación, cuando corresponde.
 
-## 📊 Verification States
+## 📊 Estados de verificación
 
-The application uses the following internal status values:
-
-| Status | Description |
+| Estado | Descripción |
 |---|---|
-| `Pendiente` | Code created and available for verification. |
-| `Verificado` | Code successfully verified. |
-| `Expirado` | Code validity period has expired. |
-| `Bloqueado` | Maximum verification attempts reached. |
-| `Reemplazado` | Code was replaced by a new verification request. |
+| `Pendiente` | Código creado y disponible para verificación. |
+| `Verificado` | Código verificado correctamente. |
+| `Expirado` | El periodo de validez terminó. |
+| `Bloqueado` | Se alcanzó el máximo de intentos. |
+| `Reemplazado` | El código fue sustituido por una nueva solicitud. |
 
-> The status values remain in Spanish because they are actual values used by the application.
+## 🔐 Reglas de verificación
 
-## 🔐 Verification Rules
+- Solo se aceptan direcciones del dominio `@gmail.com`.
+- Los códigos contienen 6 dígitos.
+- Los códigos expiran después de 10 minutos.
+- Se permiten máximo 5 intentos de verificación.
+- Los códigos anteriores sin utilizar se marcan como `Reemplazado` al solicitar uno nuevo.
+- El código original no se almacena directamente; se guarda su hash SHA-256.
+- Después de una verificación correcta, el código se marca como utilizado.
 
-- Accepted email addresses must belong to the `@gmail.com` domain.
-- Verification codes contain 6 digits.
-- Codes expire after 10 minutes.
-- A maximum of 5 verification attempts is allowed.
-- Previous unused codes are marked as `Reemplazado` when a new code is requested.
-- The original verification code is not stored directly in the database; its SHA-256 hash is stored instead.
-- After successful verification, the code is marked as used.
-
-## 🌐 REST API
+## 🌐 API REST
 
 ### `POST /auth/send-code`
 
-Generates a new verification code and sends it to the specified Gmail address.
-
-Example request:
+Genera un nuevo código y lo envía a la dirección de Gmail indicada.
 
 ```json
 {
-  "email": "user@gmail.com"
+  "email": "usuario@gmail.com"
 }
 ```
 
 ### `POST /auth/verify-code`
 
-Verifies the code submitted by the user.
-
-Example request:
+Verifica el código enviado por el usuario.
 
 ```json
 {
-  "email": "user@gmail.com",
+  "email": "usuario@gmail.com",
   "code": "123456"
 }
 ```
 
 ### `GET /auth/history`
 
-Returns the latest 20 verification records ordered by creation date in descending order.
+Devuelve los últimos 20 registros de verificación ordenados por fecha de creación descendente.
 
-The response includes information such as:
+## 🗄️ Persistencia con Marten
 
-- ID
-- Email
-- Creation timestamp
-- Expiration timestamp
-- Verification attempts
-- Status
-- Verification timestamp
-
-## 🗄️ Persistence with Marten
-
-Marten is used as a document store on top of PostgreSQL.
-
-The `VerificationCode` model is registered as a document through the ASP.NET Core configuration:
+Marten funciona como almacén documental sobre PostgreSQL.
 
 ```text
 ASP.NET Core
@@ -208,145 +183,134 @@ PostgreSQL
 Supabase
 ```
 
-Records are created, queried, and updated through Marten sessions.
+Los registros se crean, consultan y actualizan mediante sesiones de Marten.
 
-## 📧 Email Delivery
+## 📧 Envío de correo
 
-Verification codes are sent through `SmtpEmailService`.
+Los códigos se envían mediante `SmtpEmailService`.
 
-The application uses:
+La aplicación utiliza:
 
 - MailKit
 - MimeKit
 - Gmail SMTP
-- Port `587`
+- Puerto `587`
 - STARTTLS
 
-SMTP credentials are loaded through environment variables and are not included in the source code.
+Las credenciales SMTP se cargan mediante variables de entorno y no forman parte del código fuente.
 
-## Configuration
+## ⚙️ Configuración
 
-### 1. Create `.env`
+### 1. Crear `.env`
 
-In the project root, create a file named:
+En la raíz del proyecto, crea:
 
 ```text
 .env
 ```
 
-Use `.env.example` as a reference:
+Utiliza `.env.example` como referencia:
 
 ```env
 SUPABASE_CONNECTION_STRING="Host=...;Port=5432;Database=postgres;Username=...;Password=...;SSL Mode=Require"
 
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASSWORD=your_app_password
-SMTP_FROM=your_email@gmail.com
+SMTP_USER=tu_correo@gmail.com
+SMTP_PASSWORD=tu_clave_de_aplicacion
+SMTP_FROM=tu_correo@gmail.com
 SMTP_FROM_NAME=Marten Supabase
 ```
 
-Replace the placeholder values with your own credentials and configuration.
+> **Importante:** `.env` contiene información sensible y debe permanecer únicamente en local. Nunca debe publicarse en GitHub.
 
-> **Important:** `.env` contains sensitive information and must remain local. It must not be committed to GitHub.
+## ▶️ Ejecución
 
-## ▶️ Running the Application
-
-### Restore Dependencies
+### Restaurar dependencias
 
 ```bash
 dotnet restore
 ```
 
-### Run the Application
+### Ejecutar la aplicación
 
 ```bash
 dotnet run --no-launch-profile
 ```
 
-The application runs locally according to the available launch configuration.
-
-During development, it can be accessed at:
+Durante el desarrollo puede accederse mediante:
 
 ```text
 http://localhost:5000
 ```
 
-## 🧪 Testing the System
+## 🧪 Prueba del sistema
 
-### Request a Verification Code
+### Solicitar un código
 
-1. Open the web interface.
-2. Enter a Gmail address.
-3. Request a verification code.
-4. Check the received email.
+1. Abrir la interfaz web.
+2. Ingresar una dirección de Gmail.
+3. Solicitar el código de verificación.
+4. Revisar el correo recibido.
 
-### Verify the Code
+### Verificar el código
 
-1. Enter the six-digit code.
-2. Submit the verification request.
-3. Check the verification result.
-4. Review the history to confirm that the record was persisted.
+1. Ingresar el código de seis dígitos.
+2. Enviar la solicitud.
+3. Revisar el resultado.
+4. Consultar el historial para confirmar la persistencia.
 
-## 🧱 Service Structure
+## 🧱 Servicios principales
 
 ### `VerificationCodeService`
 
-Contains the main verification logic:
+Contiene la lógica principal de verificación:
 
-- Code generation.
-- SHA-256 hashing.
-- Persistence through Marten.
-- Code expiration.
-- Attempt limits.
-- Verification status management.
-- Code validation.
+- Generación de códigos.
+- Hash SHA-256.
+- Persistencia mediante Marten.
+- Expiración.
+- Límite de intentos.
+- Gestión de estados.
+- Validación del código.
 
 ### `SmtpEmailService`
 
-Implements email delivery through Gmail SMTP using MailKit.
+Gestiona el envío de correo mediante Gmail SMTP y MailKit.
 
 ### `IEmailService`
 
-Defines the contract used by the email delivery service.
+Define el contrato utilizado por el servicio de correo.
 
-## 🔒 Security and Configuration
+## 🔒 Seguridad y configuración
 
-The project uses several controls around the verification workflow:
+El proyecto incorpora:
 
-- Cryptographically secure code generation with `RandomNumberGenerator`.
-- SHA-256 hashing of verification codes.
-- 10-minute code expiration.
-- Maximum of 5 verification attempts.
-- Invalidation of previous codes.
-- External credentials through environment variables.
-- `.env` excluded from the repository through `.gitignore`.
+- Generación criptográficamente segura mediante `RandomNumberGenerator`.
+- Hash SHA-256 de los códigos.
+- Expiración de 10 minutos.
+- Máximo de 5 intentos.
+- Invalidación de códigos anteriores.
+- Credenciales externas mediante variables de entorno.
+- Exclusión de `.env` mediante `.gitignore`.
 
-## 🎯 What This Project Demonstrates
+## 🎯 Qué demuestra este proyecto
 
-Marten + Supabase demonstrates practical backend development through:
+- Desarrollo de backend con .NET 10 y ASP.NET Core.
+- Persistencia documental con Marten sobre PostgreSQL.
+- Uso de Supabase como plataforma PostgreSQL.
+- Envío de correo mediante MailKit y Gmail SMTP.
+- Generación segura de códigos de verificación.
+- Hash SHA-256 antes de la persistencia.
+- Control de expiración e intentos.
+- Configuración mediante variables de entorno.
+- Separación entre API, lógica de verificación, persistencia y correo.
 
-- .NET 10 and ASP.NET Core minimal API endpoints.
-- Document-oriented persistence with Marten over PostgreSQL.
-- Supabase as the PostgreSQL hosting platform.
-- Transactional email delivery through MailKit and Gmail SMTP.
-- Secure random verification-code generation.
-- SHA-256 hashing before persistence.
-- Expiration and verification-attempt controls.
-- Environment-based configuration for sensitive credentials.
-- Separation between API endpoints, verification logic, persistence, and email delivery.
+## 📌 Estado del proyecto
 
-## 📌 Project Status
+**Proyecto académico y de portafolio terminado.**
 
-**Completed portfolio project.**
-
-The application was developed as an academic and portfolio project to demonstrate backend API development, PostgreSQL persistence, email integration, and verification workflow design.
-
-## 🧰 Project Stack
-
-Marten + Supabase integrates:
-
+## 🧰 Tecnologías integradas
 
 ```text
 .NET 10
@@ -362,10 +326,8 @@ MailKit / Gmail SMTP
 HTML / CSS / JavaScript
 ```
 
-The project combines a REST API, document persistence, email delivery, and a web interface in a .NET application.
-
-## Author
+## 👨‍💻 Autor
 
 **Miguel Arbeláez Vallejo**
 
-Software Developer | Flutter & Dart | Full-Stack | Backend | AI/Data
+Desarrollador de Software | Flutter y Dart | Desarrollo integral | Backend | IA y Datos
