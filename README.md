@@ -2,11 +2,11 @@
 
 > API de verificación de correo desarrollada con .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase y MailKit.
 
-Marten + Supabase es una aplicación enfocada en backend que implementa un flujo completo de verificación de correo: generación segura de códigos, hash SHA-256, persistencia mediante Marten y PostgreSQL, envío mediante Gmail SMTP, expiración, límite de intentos y gestión del estado de verificación.
+Marten + Supabase es una aplicación enfocada en servidor que implementa un flujo completo de verificación de correo: generación segura de códigos, hash SHA-256, persistencia mediante Marten y PostgreSQL, envío mediante Gmail SMTP, expiración, límite de intentos y gestión del estado de verificación.
 
 ## 🧩 Tecnologías
 
-### Backend
+### Servidor
 - .NET 10
 - ASP.NET Core
 - C#
@@ -296,7 +296,7 @@ El proyecto incorpora:
 
 ## 🎯 Qué demuestra este proyecto
 
-- Desarrollo de backend con .NET 10 y ASP.NET Core.
+- Desarrollo de servidor con .NET 10 y ASP.NET Core.
 - Persistencia documental con Marten sobre PostgreSQL.
 - Uso de Supabase como plataforma PostgreSQL.
 - Envío de correo mediante MailKit y Gmail SMTP.
@@ -330,4 +330,4 @@ HTML / CSS / JavaScript
 
 **Miguel Arbeláez Vallejo**
 
-Desarrollador de Software | Flutter y Dart | Desarrollo integral | Backend | IA y Datos
+Desarrollador de Software | Flutter y Dart | Desarrollo integral | Servidor | IA y Datos
