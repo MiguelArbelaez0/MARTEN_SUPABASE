@@ -331,3 +331,11 @@ HTML / CSS / JavaScript
 **Miguel Arbeláez Vallejo**
 
 Flutter & Dart · Full-Stack · Backend · AI/Data
+
+---
+
+## 🔎 Alcance y verificación documental (2026-11-02)
+
+`MARTEN_SUPABASE.csproj` declara .NET 10, Marten 9.44, MailKit y DotNetEnv. `Program.cs` configura PostgreSQL mediante `SUPABASE_CONNECTION_STRING`. La verificación de funcionamiento SMTP, base de datos y endpoints requiere credenciales y ejecución local; no se realizó aquí.
+
+**Estado de la revisión:** contraste estático entre documentación, estructura y archivos de configuración/código seleccionados. No se ejecutaron compilaciones, pruebas automatizadas, despliegues ni auditorías dinámicas de seguridad. La documentación describe el alcance observado, sin certificar preparación para producción.
