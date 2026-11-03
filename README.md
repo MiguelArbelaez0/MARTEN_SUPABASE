@@ -1,5 +1,12 @@
 # Marten + Supabase
 
+> **Resumen para evaluación técnica**  
+> **Stack:** C# · .NET 10 · ASP.NET Core · Marten · PostgreSQL · MailKit  
+> **Evidencia:** Demuestra verificación de correo, persistencia de códigos temporales y límites de expiración/intentos.  
+> **Código relevante:** Para evaluar: `Program.cs`, `Services/` y `Models/`.  
+> **Verificación:** revisión estática de repositorio; no equivale a ejecución de tests ni certificación de producción.
+
+
 > API de verificación de correo desarrollada con .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase y MailKit.
 
 Marten + Supabase es una aplicación enfocada en servidor que implementa un flujo completo de verificación de correo: generación segura de códigos, hash SHA-256, persistencia mediante Marten y PostgreSQL, envío mediante Gmail SMTP, expiración, límite de intentos y gestión del estado de verificación.
