@@ -1,11 +1,10 @@
 # Marten + Supabase
 
-> **Resumen para evaluación técnica**  
+> **En resumen**  
 > **Stack:** C# · .NET 10 · ASP.NET Core · Marten · PostgreSQL · MailKit  
-> **Evidencia:** Demuestra verificación de correo, persistencia de códigos temporales y límites de expiración/intentos.  
-> **Código para revisar:** `Program.cs`, `Services/` y `Models/`.  
-> **Estado:** revisión documental; pruebas y despliegue no verificados.
-
+> **Funcionalidad:** verificación de correo, persistencia de códigos temporales y límites de expiración/intentos.  
+> **Código principal:** `Program.cs`, `Services/` y `Models/`.  
+> **Pruebas:** ejecución no verificada.
 
 > API de verificación de correo desarrollada con .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase y MailKit.
 
@@ -341,8 +340,7 @@ Flutter & Dart · Full-Stack · Backend · AI/Data
 
 ---
 
-## Estado técnico y limitaciones
+## Requisitos y limitaciones
 
 `MARTEN_SUPABASE.csproj` declara .NET 10, Marten 9.44, MailKit y DotNetEnv. `Program.cs` configura PostgreSQL mediante `SUPABASE_CONNECTION_STRING`. La verificación de funcionamiento SMTP, base de datos y endpoints requiere credenciales y ejecución local; no se realizó aquí.
 
-**Verificación:** análisis estático del repositorio. No se han comprobado aquí compilación, pruebas automatizadas, despliegue ni seguridad dinámica.
