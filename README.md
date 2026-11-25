@@ -1,5 +1,9 @@
 # Marten + Supabase
 
+> **Estado:** Completado  
+> **Versión:** `1.0.0 (MARTEN_SUPABASE.csproj)`  
+> **Tecnologías:** C# · .NET 10 · ASP.NET Core · Marten · PostgreSQL · MailKit
+
 > **En resumen**  
 > **Stack:** C# · .NET 10 · ASP.NET Core · Marten · PostgreSQL · MailKit  
 > **Funcionalidad:** verificación de correo, persistencia de códigos temporales y límites de expiración/intentos.  
