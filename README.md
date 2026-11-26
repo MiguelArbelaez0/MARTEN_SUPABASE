@@ -8,7 +8,7 @@
 > **Stack:** C# · .NET 10 · ASP.NET Core · Marten · PostgreSQL · MailKit  
 > **Funcionalidad:** verificación de correo, persistencia de códigos temporales y límites de expiración/intentos.  
 > **Código principal:** `Program.cs`, `Services/` y `Models/`.  
-> **Pruebas:** ejecución no verificada.
+> **Validación:** compilación correcta sin advertencias y análisis de dependencias sin vulnerabilidades detectadas.
 
 > API de verificación de correo desarrollada con .NET 10, ASP.NET Core, Marten, PostgreSQL/Supabase y MailKit.
 
